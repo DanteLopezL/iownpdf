@@ -1,204 +1,239 @@
-Welcome to your new TanStack Start app! 
+# iownpdf
 
-# Getting Started
+> **Beautiful, offline-first PDF conversion for everyone.**
 
-To run this application:
+A modern desktop application built with Tauri and TanStack Start that converts various document formats to PDF with ease.
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+
+---
+
+## ✨ Features
+
+- 🎨 **Beautiful UI** - Clean, modern interface with dark/light theme support
+- ⚡ **Fast & Lightweight** - Native desktop performance with minimal resource usage
+- 🔒 **Offline-First** - Works completely offline, no internet required
+- 📦 **Multi-Format Support** - Convert MD, DOCX, PPTX, XLSX and more to PDF
+- 🛠️ **Customizable** - Control output quality, page size, margins, and metadata
+- 🚀 **Batch Processing** - Convert multiple files at once
+
+---
+
+## 📦 Installation
+
+### From Source
 
 ```bash
+# Clone the repository
+git clone https://github.com/yourusername/iownpdf.git
+cd iownpdf
+
+# Install dependencies
 bun install
+
+# Run development mode
 bun --bun run dev
-```
 
-# Building For Production
-
-To build this application for production:
-
-```bash
+# Build for production
 bun --bun run build
 ```
 
-## Testing
+### Pre-built Binaries
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+Pre-built installers for Windows, macOS, and Linux will be available on the [Releases](https://github.com/yourusername/iownpdf/releases) page.
+
+---
+
+## 🚀 Getting Started
+
+### Development
 
 ```bash
+# Start development server
+bun --bun run dev
+
+# Run tests
 bun --bun run test
+
+# Format code
+bun --bun run format
+
+# Lint code
+bun --bun run lint
+
+# Run all checks
+bun --bun run check
 ```
 
-## Styling
+### Building for Production
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+```bash
+# Build the web app
+bun --bun run build
+
+# Build the Tauri desktop app
+bun tauri build
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| [TanStack Start](https://tanstack.com/start) | Full-stack React framework |
+| [TanStack Router](https://tanstack.com/router) | File-based routing |
+| [Tauri](https://tauri.app) | Desktop app framework |
+| [React 19](https://react.dev) | UI library |
+| [Tailwind CSS v4](https://tailwindcss.com) | Styling |
+| [TypeScript](https://typescriptlang.org) | Type safety |
+| [Biome](https://biomejs.dev) | Linting & formatting |
+| [Vitest](https://vitest.dev) | Testing |
+| [Lucide React](https://lucide.dev) | Icons |
+
+---
+
+## 📁 Project Structure
+
+```
+iownpdf/
+├── src/                  # React application source code
+│   ├── routes/           # File-based routes (TanStack Router)
+│   ├── components/       # Reusable UI components
+│   ├── lib/              # Utility functions and helpers
+│   └── styles/           # Global styles
+├── src-tauri/            # Tauri native code (Rust)
+│   ├── src/              # Rust source files
+│   └── tauri.conf.json   # Tauri configuration
+├── public/               # Static assets
+├── index.html            # HTML template
+├── vite.config.ts        # Vite configuration
+├── tsconfig.json         # TypeScript configuration
+└── biome.json            # Biome configuration
+```
+
+---
+
+## 📖 Usage
+
+### Converting Documents
+
+1. **Launch** iownpdf from your applications folder
+2. **Drag & Drop** your file(s) onto the conversion zone
+3. **Select** your desired output format (PDF)
+4. **Configure** optional settings (page size, margins, etc.)
+5. **Click** Convert and wait for completion
+6. **Open** your converted PDF or the containing folder
+
+### Supported Formats
+
+| Format | Extension | Status |
+|--------|-----------|--------|
+| Markdown | `.md` | 🚧 In Progress |
+| Word | `.docx` | 🚧 In Progress |
+| PowerPoint | `.pptx` | ⏳ Planned |
+| Excel | `.xlsx` | ⏳ Planned |
+| HTML | `.html` | ⏳ Planned |
+| Images | `.png`, `.jpg` | ⏳ Planned |
+| Text | `.txt` | ⏳ Planned |
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+bun --bun run test
+
+# Run tests in watch mode
+bun --bun run test:watch
+
+# Run tests with coverage
+bun --bun run test:coverage
+```
+
+---
+
+## 🎨 Customization
 
 ### Removing Tailwind CSS
 
 If you prefer not to use Tailwind CSS:
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `bun install @tailwindcss/vite tailwindcss -D`
+1. Remove demo pages in `src/routes/demo/`
+2. Replace Tailwind imports in `src/styles.css` with your own styles
+3. Remove `tailwindcss()` from plugins in `vite.config.ts`
+4. Uninstall packages: `bun remove @tailwindcss/vite tailwindcss`
 
-## Linting & Formatting
+### Adding Custom Routes
 
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
+TanStack Router uses file-based routing. To add a new route:
 
+1. Create a new file in `src/routes/` (e.g., `src/routes/about.tsx`)
+2. The route will be automatically generated at `/about`
+
+Example:
+```tsx
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/about')({
+  component: AboutComponent,
+})
+
+function AboutComponent() {
+  return <h1>About Page</h1>
+}
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) (coming soon) first.
+
+### Development Setup
 
 ```bash
-bun --bun run lint
-bun --bun run format
-bun --bun run check
+# Fork the repository
+# Clone your fork
+git clone https://github.com/YOUR_USERNAME/iownpdf.git
+
+# Install dependencies
+bun install
+
+# Create a branch
+git checkout -b feature/your-feature
+
+# Make your changes and commit
+git commit -m "feat: add amazing feature"
+
+# Push and create PR
+git push origin feature/your-feature
 ```
 
+---
 
+## 📄 License
 
-## Routing
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
+---
 
-### Adding A Route
+## 🙏 Acknowledgments
 
-To add a new route to your application just add a new file in the `./src/routes` directory.
+- Built with [TanStack Start](https://tanstack.com/start) and [Tauri](https://tauri.app)
+- Icons by [Lucide](https://lucide.dev)
+- Powered by [Vite](https://vitejs.dev)
 
-TanStack will automatically generate the content of the route file for you.
+---
 
-Now that you have two routes you can use a `Link` component to navigate between them.
+## 📬 Contact
 
-### Adding Links
+- **Website:** [iownpdf.com](https://iownpdf.com) (coming soon)
+- **GitHub:** [github.com/iownpdf](https://github.com/yourusername/iownpdf)
+- **Issues:** [Report a bug](https://github.com/yourusername/iownpdf/issues)
 
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
+---
 
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+**Made with ❤️ using TanStack Start + Tauri**
