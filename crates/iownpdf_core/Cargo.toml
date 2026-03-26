@@ -6,3 +6,6 @@ edition = "2024"
 [dependencies]
 markdown2pdf = "0.2.2"
 office2pdf = "0.5.0"
+
+[dev-dependencies]
+tempfile = "3"
