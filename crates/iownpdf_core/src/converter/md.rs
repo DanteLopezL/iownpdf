@@ -64,7 +64,7 @@ mod tests {
         let result = MdConverter::new(&file_path);
         assert!(matches!(
             result.unwrap_err(),
-            IownPdfError::UnsupportedFormat { .. }
+            IownPdfError::ConversionFailed(_)
         ));
     }
 
