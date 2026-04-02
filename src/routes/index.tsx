@@ -57,7 +57,7 @@ function App() {
 	const currentConfig = openModal ? fileConfigs[openModal] : null;
 
 	return (
-		<main className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-16">
+		<main className="min-h-screen bg-linear-to-b from-gray-50 to-white py-16">
 			<div className="mx-auto max-w-5xl px-6">
 				{/* Header */}
 				<div className="mb-16 text-center">
