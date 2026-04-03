@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm *)",
+      "Bash(bun *)",
+      "Bash(npx *)",
+      "Bash(biome *)",
+      "Bash(bunx *)",
+      "Bash(sed *)",
+      "Bash(python3)",
+      "Bash(import *)",
+      "Bash(file *)",
+      "Bash(as *)",
+      "Bash(content *)",
+      "Bash('''<div classname=\"mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white\">\n\t\t\t\t\t\t\t\t<svg\n\t\t\t\t\t\t\t\t\tclassname=\"h-6 w-6\"\n\t\t\t\t\t\t\t\t\tfill=\"none\"\n\t\t\t\t\t\t\t\t\tstroke=\"currentcolor\"\n\t\t\t\t\t\t\t\t\tviewbox=\"0 0 24 24\"\n\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\tstrokelinecap=\"round\"\n\t\t\t\t\t\t\t\t\t\tstrokelinejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\tstrokewidth={2}\n\t\t\t\t\t\t\t\t\t\td=\"m12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2h6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10v7a4 4 0 00-8 0v4h8z\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t</svg>\n\t\t\t\t\t\t\t</div>''',)",
+      "Bash('''<div classname=\"mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white\">\n\t\t\t\t\t\t\t\t<shield classname=\"h-6 w-6\" />\n\t\t\t\t\t\t\t</div>''')",
+      "Bash('''<div classname=\"mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white\">\n\t\t\t\t\t\t\t\t<svg\n\t\t\t\t\t\t\t\t\tclassname=\"h-6 w-6\"\n\t\t\t\t\t\t\t\t\tfill=\"none\"\n\t\t\t\t\t\t\t\t\tstroke=\"currentcolor\"\n\t\t\t\t\t\t\t\t\tviewbox=\"0 0 24 24\"\n\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\tstrokelinecap=\"round\"\n\t\t\t\t\t\t\t\t\t\tstrokelinejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\tstrokewidth={2}\n\t\t\t\t\t\t\t\t\t\td=\"m13 10v3l4 14h7v7l9-11h-7z\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t</svg>\n\t\t\t\t\t\t\t</div>''',)",
+      "Bash('''<div classname=\"mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white\">\n\t\t\t\t\t\t\t\t<zap classname=\"h-6 w-6\" />\n\t\t\t\t\t\t\t</div>''')",
+      "Bash('''<div classname=\"mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 text-white\">\n\t\t\t\t\t\t\t\t<svg\n\t\t\t\t\t\t\t\t\tclassname=\"h-6 w-6\"\n\t\t\t\t\t\t\t\t\tfill=\"none\"\n\t\t\t\t\t\t\t\t\tstroke=\"currentcolor\"\n\t\t\t\t\t\t\t\t\tviewbox=\"0 0 24 24\"\n\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t<path\n\t\t\t\t\t\t\t\t\t\tstrokelinecap=\"round\"\n\t\t\t\t\t\t\t\t\t\tstrokelinejoin=\"round\"\n\t\t\t\t\t\t\t\t\t\tstrokewidth={2}\n\t\t\t\t\t\t\t\t\t\td=\"m12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1m12 8v7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1m21 12a9 9 0 11-18 0 9 9 0 0118 0z\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t</svg>\n\t\t\t\t\t\t\t</div>''',)",
+      "Bash('''<div classname=\"mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 text-white\">\n\t\t\t\t\t\t\t\t<coins classname=\"h-6 w-6\" />\n\t\t\t\t\t\t\t</div>''')",
+      "Bash(f.write)",
+      "Bash(print)",
+      "Bash(eof)",
+      "Bash(sleep *)",
+      "Bash(cargo check)",
+      "Bash(npm run *)"
+    ]
+  },
+  "$version": 3
+}
