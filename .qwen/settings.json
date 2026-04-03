@@ -22,7 +22,8 @@
       "Bash(print)",
       "Bash(eof)",
       "Bash(sleep *)",
-      "Bash(cargo check)"
+      "Bash(cargo check)",
+      "Bash(npm run *)"
     ]
   },
   "$version": 3

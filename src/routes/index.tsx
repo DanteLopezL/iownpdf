@@ -147,9 +147,15 @@ function App() {
     <main className="relative min-h-screen overflow-hidden bg-linear-to-br from-slate-50 via-white to-blue-50">
       {/* Animated Background Elements */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-80 w-80 rounded-full bg-linear-to-br from-blue-400/20 to-purple-400/20 blur-3xl" />
-        <div className="absolute -right-40 top-20 h-80 w-80 rounded-full bg-linear-to-br from-cyan-400/20 to-blue-400/20 blur-3xl" />
-        <div className="absolute -bottom-40 left-1/3 h-80 w-80 rounded-full bg-linear-to-br from-purple-400/20 to-pink-400/20 blur-3xl" />
+        <div className="absolute -left-40 -top-40 h-96 w-96 rounded-full bg-linear-to-br from-blue-400/20 to-purple-400/20 blur-3xl animate-pulse" />
+        <div
+          className="absolute -right-40 top-20 h-96 w-96 rounded-full bg-linear-to-br from-cyan-400/20 to-blue-400/20 blur-3xl animate-pulse"
+          style={{ animationDelay: "2s" }}
+        />
+        <div
+          className="absolute -bottom-40 left-1/3 h-96 w-96 rounded-full bg-linear-to-br from-purple-400/20 to-pink-400/20 blur-3xl animate-pulse"
+          style={{ animationDelay: "4s" }}
+        />
       </div>
 
       {/* Grid Pattern Overlay */}
@@ -162,35 +168,51 @@ function App() {
         />
       </div>
 
-      <div className="relative mx-auto max-w-5xl px-6 py-16">
+      <div className="relative mx-auto max-w-6xl px-6 py-20">
         {/* Header */}
-        <div className="mb-6 text-center">
-          <div className="mx-auto mb-4 flex w-fit items-center gap-2 rounded-full bg-linear-to-r from-blue-500/10 to-purple-500/10 px-4 py-2 text-sm font-medium text-slate-600 backdrop-blur-sm">
-            <Sparkles className="h-4 w-4" />
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full bg-linear-to-r from-blue-500/10 to-purple-500/10 px-5 py-2.5 text-sm font-medium text-slate-600 shadow-lg backdrop-blur-sm ring-1 ring-slate-200/50">
+            <Sparkles className="h-4 w-4 text-blue-500" />
             <span>Free & Private Document Conversion</span>
           </div>
-          <h1 className="bg-linear-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent md:text-6xl">
+          <h1 className="bg-linear-to-r from-slate-900 via-blue-800 to-slate-900 bg-clip-text text-6xl font-extrabold tracking-tight text-transparent md:text-7xl lg:text-8xl">
             i own pdf
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+          <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-600 leading-relaxed">
             Convert your documents to PDF with ease. Fast, private, and
             completely local.
           </p>
         </div>
 
         {/* Stats */}
-        <div className="mb-12 flex items-center justify-center gap-8 text-sm text-slate-500">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-green-500" />
-            <span>100% Local</span>
+        <div className="mb-14 flex items-center justify-center gap-10 text-sm text-slate-600">
+          <div className="flex items-center gap-2.5 rounded-full bg-white/60 px-4 py-2 shadow-md ring-1 ring-slate-200/50 backdrop-blur-sm">
+            <div className="h-2.5 w-2.5 rounded-full bg-linear-to-r from-green-400 to-emerald-500 shadow-lg shadow-green-200/50" />
+            <span className="font-medium">100% Local</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-blue-500" />
-            <span>No Upload</span>
+          <div className="flex items-center gap-2.5 rounded-full bg-white/60 px-4 py-2 shadow-md ring-1 ring-slate-200/50 backdrop-blur-sm">
+            <div className="h-2.5 w-2.5 rounded-full bg-linear-to-r from-blue-400 to-cyan-500 shadow-lg shadow-blue-200/50" />
+            <span className="font-medium">No Upload</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-purple-500" />
-            <span>Privacy First</span>
+          <div className="flex items-center gap-2.5 rounded-full bg-white/60 px-4 py-2 shadow-md ring-1 ring-slate-200/50 backdrop-blur-sm">
+            <div className="h-2.5 w-2.5 rounded-full bg-linear-to-r from-purple-400 to-pink-500 shadow-lg shadow-purple-200/50" />
+            <span className="font-medium">Privacy First</span>
+          </div>
+        </div>
+
+        {/* Features Section */}
+        <div className="mb-8 flex items-center justify-center gap-6 text-sm">
+          <div className="flex items-center gap-2 text-slate-500">
+            <Shield className="h-4 w-4" />
+            <span>Secure</span>
+          </div>
+          <div className="flex items-center gap-2 text-slate-500">
+            <Zap className="h-4 w-4" />
+            <span>Fast</span>
+          </div>
+          <div className="flex items-center gap-2 text-slate-500">
+            <Coins className="h-4 w-4" />
+            <span>Free Forever</span>
           </div>
         </div>
 
@@ -224,6 +246,13 @@ function App() {
             textColor={fileConfigs.docx.textColor}
           />
         </div>
+
+        {/* Footer */}
+        <div className="text-center">
+          <p className="text-sm text-slate-500">
+            Built with ❤️ using Rust & React
+          </p>
+        </div>
       </div>
 
       {/* Modal */}
@@ -238,16 +267,16 @@ function App() {
             <div className="space-y-6">
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div
-                  className={`rounded-xl border ${currentConfig.borderColor} ${currentConfig.bgColor} p-6`}
+                  className={`rounded-2xl border ${currentConfig.borderColor} ${currentConfig.bgColor} p-6 shadow-lg`}
                 >
                   <div className="mb-4 flex items-center gap-3">
                     <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-r ${currentConfig.gradient}`}
+                      className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-r ${currentConfig.gradient} shadow-xl`}
                     >
-                      <CheckCircle2 className="h-6 w-6 text-white" />
+                      <CheckCircle2 className="h-7 w-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-slate-900">
+                      <h3 className="text-lg font-bold text-slate-900">
                         Conversion Successful!
                       </h3>
                       <p className="text-sm text-slate-600">
@@ -255,7 +284,7 @@ function App() {
                       </p>
                     </div>
                   </div>
-                  <div className="rounded-lg border border-white/50 bg-white/80 p-3">
+                  <div className="rounded-xl border border-white/50 bg-white/80 p-4 shadow-sm backdrop-blur-sm">
                     <p className="truncate text-sm font-medium text-slate-700">
                       {successPath}
                     </p>
@@ -265,36 +294,46 @@ function App() {
               <button
                 type="button"
                 onClick={handleCloseModal}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50"
+                className="group w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold text-slate-700 shadow-md transition-all hover:bg-slate-50 hover:shadow-lg"
               >
-                Close
+                <span className="flex items-center justify-center gap-2">
+                  Close
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
               </button>
             </div>
           ) : conversionState === "converting" ? (
             <div className="space-y-6">
               <div className="animate-in fade-in duration-300">
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-8">
+                <div className="rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-8 shadow-lg">
                   <div className="flex flex-col items-center text-center">
-                    <div className="relative mb-4">
-                      <Loader2 className="h-16 w-16 animate-spin text-blue-600" />
+                    <div className="relative mb-6">
+                      {/* Pulsing Ring */}
+                      <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-ping" />
+                      <Loader2 className="relative h-20 w-20 animate-spin text-blue-600" />
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <currentConfig.icon className="h-6 w-6 text-slate-400" />
+                        <currentConfig.icon className="h-8 w-8 text-slate-400" />
                       </div>
                     </div>
-                    <h3 className="mb-2 font-semibold text-slate-900">
+                    <h3 className="mb-2 text-xl font-bold text-slate-900">
                       Converting your file...
                     </h3>
                     <p className="text-sm text-slate-600">
                       This may take a moment
                     </p>
                     {selectedFilePath && (
-                      <div className="mt-4 w-full rounded-lg border border-white/50 bg-white/80 p-3">
+                      <div className="mt-6 w-full rounded-xl border border-white/50 bg-white/80 p-4 shadow-sm backdrop-blur-sm">
                         <p className="truncate text-sm font-medium text-slate-700">
                           {selectedFileName}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
-                          Processing...
-                        </p>
+                        <div className="mt-3 flex items-center gap-2">
+                          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
+                            <div className="h-full w-2/3 animate-pulse rounded-full bg-linear-to-r from-blue-500 to-purple-500" />
+                          </div>
+                          <span className="text-xs font-medium text-slate-500">
+                            Processing...
+                          </span>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -306,16 +345,16 @@ function App() {
               <button
                 type="button"
                 onClick={handlePickFile}
-                className="group relative flex w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 p-8 transition-all duration-300 hover:border-slate-300 hover:bg-slate-50/50"
+                className="group relative flex w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-200 p-10 transition-all duration-300 hover:border-slate-300 hover:bg-slate-50/50 hover:shadow-lg"
               >
                 <div className="relative flex flex-col items-center text-center">
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-400 transition-all duration-300 group-hover:from-slate-200 group-hover:to-slate-300 group-hover:text-slate-500">
-                    <currentConfig.icon className="h-7 w-7 transition-transform duration-300 group-hover:scale-110" />
+                  <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-400 transition-all duration-300 group-hover:from-slate-200 group-hover:to-slate-300 group-hover:text-slate-500 group-hover:shadow-lg">
+                    <currentConfig.icon className="h-8 w-8 transition-transform duration-300 group-hover:scale-110" />
                   </div>
-                  <p className="text-sm font-semibold text-slate-900">
+                  <p className="text-base font-semibold text-slate-900">
                     {currentConfig.label}
                   </p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-2 text-xs text-slate-500">
                     {currentConfig.description}
                   </p>
                 </div>
@@ -324,28 +363,28 @@ function App() {
               {selectedFilePath && (
                 <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                   {conversionState === "error" && error && (
-                    <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4">
+                    <div className="mb-4 rounded-xl border border-red-200 bg-linear-to-r from-red-50 to-red-100/50 p-5 shadow-sm">
                       <div className="flex gap-3">
                         <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
                         <div>
-                          <p className="text-sm font-medium text-red-900">
+                          <p className="text-sm font-bold text-red-900">
                             Conversion Failed
                           </p>
-                          <p className="mt-1 text-sm text-red-700">{error}</p>
+                          <p className="mt-1.5 text-sm text-red-700">{error}</p>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="mb-4 rounded-xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-5 shadow-md">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-r ${currentConfig.gradient}`}
+                        className={`flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-r ${currentConfig.gradient} shadow-lg`}
                       >
-                        <currentConfig.icon className="h-5 w-5 text-white" />
+                        <currentConfig.icon className="h-6 w-6 text-white" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-slate-900">
+                        <p className="truncate text-sm font-semibold text-slate-900">
                           {selectedFileName}
                         </p>
                         <p className="text-xs text-slate-500">
@@ -365,10 +404,10 @@ function App() {
                   <button
                     type="button"
                     onClick={handleConvertToPdf}
-                    className={`group flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r ${currentConfig.gradient} px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:shadow-xl`}
+                    className={`group flex w-full items-center justify-center gap-2.5 rounded-xl bg-linear-to-r ${currentConfig.gradient} px-4 py-4 text-sm font-bold text-white shadow-xl transition-all hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]`}
                   >
                     <span>Convert to PDF</span>
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </button>
                 </div>
               )}
