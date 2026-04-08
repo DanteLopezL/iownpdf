@@ -2975,6 +2975,7 @@ version = "0.1.0"
 dependencies = [
  "markdown2pdf",
  "office2pdf",
+ "thiserror 2.0.18",
 ]
 
 [[package]]

@@ -1,30 +1,28 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
-use crate::{errors::IownPdfError, utils::validator::validate_input};
+use crate::{converter::FileConverter, errors::IownPdfError, utils::validator::validate_input};
 
+/// Converter for PPTX files to PDF.
 #[derive(Debug)]
 pub struct PptxConverter {
     file: PathBuf,
 }
 
-impl PptxConverter {
-    pub fn new(file: &Path) -> Result<Self, IownPdfError> {
+impl FileConverter for PptxConverter {
+    fn new(file: &Path) -> Result<Self, IownPdfError> {
         validate_input(file, "pptx")?;
         Ok(Self {
             file: file.to_path_buf(),
         })
     }
 
-    pub fn to_pdf(self) -> Result<PathBuf, IownPdfError> {
+    fn to_pdf(self) -> Result<PathBuf, IownPdfError> {
         let output_path = self.file.with_extension("pdf");
 
         let result = office2pdf::convert(&self.file)
             .map_err(|e| IownPdfError::ConversionFailed(e.to_string()))?;
 
-        fs::write(&output_path, result.pdf).map_err(IownPdfError::Io)?;
+        std::fs::write(&output_path, result.pdf).map_err(IownPdfError::Io)?;
 
         Ok(output_path)
     }
@@ -65,7 +63,7 @@ mod tests {
         assert!(result.is_err());
         assert!(matches!(
             result.unwrap_err(),
-            IownPdfError::ConversionFailed(_)
+            IownPdfError::UnsupportedFormat { .. }
         ));
     }
 

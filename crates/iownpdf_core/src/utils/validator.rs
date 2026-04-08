@@ -5,16 +5,23 @@ use crate::errors::IownPdfError;
 /// Validates input file for conversion.
 ///
 /// Checks that the file exists and has the expected extension.
-pub fn validate_input(file: &Path, extension: &str) -> Result<(), IownPdfError> {
-    if !file.exists() {
+/// Extension matching is case-sensitive.
+pub fn validate_input(file: &Path, expected_ext: &str) -> Result<(), IownPdfError> {
+    // Check file existence first
+    if !file.try_exists().map_err(IownPdfError::Io)? {
         return Err(IownPdfError::FileNotFound(file.to_path_buf()));
     }
 
-    if !file.extension().is_some_and(|e| e == extension) {
-        return Err(IownPdfError::ConversionFailed(format!(
-            "expected .{extension} file, got {:?}",
-            file
-        )));
+    // Validate extension
+    let extension = file.extension().ok_or_else(|| {
+        IownPdfError::ConversionFailed(format!("file has no extension: {file:?}"))
+    })?;
+
+    if extension != expected_ext {
+        return Err(IownPdfError::UnsupportedFormat {
+            expected: expected_ext.to_string(),
+            got: extension.to_string_lossy().to_string(),
+        });
     }
 
     Ok(())
@@ -55,7 +62,7 @@ mod tests {
         assert!(result.is_err());
         assert!(matches!(
             result.unwrap_err(),
-            IownPdfError::ConversionFailed(_)
+            IownPdfError::UnsupportedFormat { .. }
         ));
     }
 
