@@ -1762,6 +1762,7 @@ dependencies = [
  "markdown2pdf",
  "office2pdf",
  "tempfile",
+ "thiserror 2.0.18",
 ]
 
 [[package]]

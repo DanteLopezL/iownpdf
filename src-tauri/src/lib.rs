@@ -3,8 +3,27 @@
 
 use std::path::Path;
 
-use iownpdf_core::converter::{DocxConverter, MdConverter, PptxConverter};
+use iownpdf_core::converter::{DocxConverter, FileConverter, MdConverter, PptxConverter};
 use tauri_plugin_dialog::DialogExt;
+
+/// Supported file types for conversion.
+#[derive(Debug, Clone, Copy)]
+enum FileType {
+    Md,
+    Docx,
+    Pptx,
+}
+
+impl FileType {
+    fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "md" => Some(Self::Md),
+            "docx" => Some(Self::Docx),
+            "pptx" => Some(Self::Pptx),
+            _ => None,
+        }
+    }
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -30,25 +49,26 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
-#[tauri::command]
-fn convert_md_to_pdf(file_path: String) -> Result<String, String> {
-    let converter = MdConverter::new(Path::new(&file_path)).map_err(|e| e.to_string())?;
+/// Generic helper to convert a file using the provided converter.
+fn convert_file<C: FileConverter>(file_path: &str) -> Result<String, String> {
+    let converter = C::new(Path::new(file_path)).map_err(|e| e.to_string())?;
     let output = converter.to_pdf().map_err(|e| e.to_string())?;
     Ok(output.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+fn convert_md_to_pdf(file_path: String) -> Result<String, String> {
+    convert_file::<MdConverter>(&file_path)
 }
 
 #[tauri::command]
 fn convert_docx_to_pdf(file_path: String) -> Result<String, String> {
-    let converter = DocxConverter::new(Path::new(&file_path)).map_err(|e| e.to_string())?;
-    let output = converter.to_pdf().map_err(|e| e.to_string())?;
-    Ok(output.to_string_lossy().to_string())
+    convert_file::<DocxConverter>(&file_path)
 }
 
 #[tauri::command]
 fn convert_pptx_to_pdf(file_path: String) -> Result<String, String> {
-    let converter = PptxConverter::new(Path::new(&file_path)).map_err(|e| e.to_string())?;
-    let output = converter.to_pdf().map_err(|e| e.to_string())?;
-    Ok(output.to_string_lossy().to_string())
+    convert_file::<PptxConverter>(&file_path)
 }
 
 #[tauri::command]
@@ -59,23 +79,23 @@ async fn pick_file(
     use tauri_plugin_dialog::FilePath;
 
     // Set file type filters based on the type
-    let filtered_path = match file_type.as_str() {
-        "md" => app
+    let filtered_path = match FileType::from_str(&file_type) {
+        Some(FileType::Md) => app
             .dialog()
             .file()
             .add_filter("Markdown Files", &["md", "markdown"])
             .blocking_pick_file(),
-        "docx" => app
+        Some(FileType::Docx) => app
             .dialog()
             .file()
             .add_filter("Word Documents", &["docx"])
             .blocking_pick_file(),
-        "pptx" => app
+        Some(FileType::Pptx) => app
             .dialog()
             .file()
             .add_filter("PowerPoint Presentations", &["pptx"])
             .blocking_pick_file(),
-        _ => app.dialog().file().blocking_pick_file(),
+        None => app.dialog().file().blocking_pick_file(),
     };
 
     // Convert FilePath enum to string
