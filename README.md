@@ -1,22 +1,18 @@
 # iownpdf
 
-> **Beautiful, offline-first PDF conversion for everyone.**
+> **Your documents, your control. Beautiful, offline-first PDF conversion.**
 
-A modern desktop application built with Tauri and TanStack Start that converts various document formats to PDF with ease.
-
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+A desktop application built with Tauri and React that converts Markdown, Word, and PowerPoint files to PDF — entirely locally, with zero uploads.
 
 ---
 
 ## ✨ Features
 
-- 🎨 **Beautiful UI** - Clean, modern interface with dark/light theme support
-- ⚡ **Fast & Lightweight** - Native desktop performance with minimal resource usage
-- 🔒 **Offline-First** - Works completely offline, no internet required
-- 📦 **Multi-Format Support** - Convert MD, DOCX, PPTX, XLSX and more to PDF
-- 🛠️ **Customizable** - Control output quality, page size, margins, and metadata
-- 🚀 **Batch Processing** - Convert multiple files at once
+- 🎨 **Bold Editorial UI** — Brutalist design with sharp geometry and clear typographic hierarchy
+- ⚡ **Native Performance** — Powered by Rust (`iownpdf_core`) for fast conversions
+- 🔒 **100% Local** — Your files never leave your machine
+- 📦 **Multi-Format** — Convert `.md`, `.docx`, and `.pptx` to PDF
+- 🖥️ **Desktop App** — Native file picker integration via Tauri dialog plugin
 
 ---
 
@@ -33,15 +29,17 @@ cd iownpdf
 bun install
 
 # Run development mode
-bun --bun run dev
+bun run dev
 
 # Build for production
-bun --bun run build
+bun run build
 ```
 
-### Pre-built Binaries
+### Prerequisites
 
-Pre-built installers for Windows, macOS, and Linux will be available on the [Releases](https://github.com/yourusername/iownpdf/releases) page.
+- [Rust](https://rustup.rs/) 1.89+
+- [Bun](https://bun.sh/) 1.0+
+- macOS, Windows, or Linux
 
 ---
 
@@ -50,30 +48,24 @@ Pre-built installers for Windows, macOS, and Linux will be available on the [Rel
 ### Development
 
 ```bash
-# Start development server
-bun --bun run dev
+# Start development server (Vite + Tauri)
+bun run dev
 
-# Run tests
-bun --bun run test
+# Run Biome check
+bun run check
 
 # Format code
-bun --bun run format
+bun run format
 
 # Lint code
-bun --bun run lint
-
-# Run all checks
-bun --bun run check
+bun run lint
 ```
 
-### Building for Production
+### Building the Desktop App
 
 ```bash
-# Build the web app
-bun --bun run build
-
 # Build the Tauri desktop app
-bun tauri build
+bunx tauri build
 ```
 
 ---
@@ -82,15 +74,18 @@ bun tauri build
 
 | Technology | Purpose |
 |------------|---------|
-| [TanStack Start](https://tanstack.com/start) | Full-stack React framework |
-| [TanStack Router](https://tanstack.com/router) | File-based routing |
-| [Tauri](https://tauri.app) | Desktop app framework |
+| [Tauri v2](https://tauri.app) | Desktop app framework (Rust backend) |
 | [React 19](https://react.dev) | UI library |
+| [TanStack Router](https://tanstack.com/router) | File-based routing |
 | [Tailwind CSS v4](https://tailwindcss.com) | Styling |
 | [TypeScript](https://typescriptlang.org) | Type safety |
 | [Biome](https://biomejs.dev) | Linting & formatting |
-| [Vitest](https://vitest.dev) | Testing |
+| [Vite](https://vitejs.dev) | Build tool |
 | [Lucide React](https://lucide.dev) | Icons |
+
+### Rust Core
+
+The conversion engine lives in `crates/iownpdf_core` — a Rust crate that handles all PDF generation. The Tauri backend (`src-tauri/`) exposes these as invokable commands to the React frontend.
 
 ---
 
@@ -98,117 +93,77 @@ bun tauri build
 
 ```
 iownpdf/
-├── src/                  # React application source code
-│   ├── routes/           # File-based routes (TanStack Router)
-│   ├── components/       # Reusable UI components
-│   ├── lib/              # Utility functions and helpers
-│   └── styles/           # Global styles
-├── src-tauri/            # Tauri native code (Rust)
-│   ├── src/              # Rust source files
-│   └── tauri.conf.json   # Tauri configuration
-├── public/               # Static assets
-├── index.html            # HTML template
-├── vite.config.ts        # Vite configuration
-├── tsconfig.json         # TypeScript configuration
-└── biome.json            # Biome configuration
+├── src/                      # React frontend
+│   ├── routes/               # File-based routes (TanStack Router)
+│   │   ├── __root.tsx        # Root layout
+│   │   └── index.tsx         # Home page
+│   ├── components/           # UI components
+│   │   ├── ComingSoonCard    # Placeholder for planned features
+│   │   ├── ConvertButton     # Conversion action card
+│   │   └── Modal             # File picker & conversion modal
+│   ├── lib/                  # Utilities (conversion helpers)
+│   ├── styles.css            # Global styles & design tokens
+│   └── main.tsx              # App entry point
+├── src-tauri/                # Tauri Rust backend
+│   ├── src/lib.rs            # Tauri commands & setup
+│   └── tauri.conf.json       # Tauri configuration
+├── crates/iownpdf_core/      # Core PDF conversion engine (Rust)
+├── index.html                # HTML template
+└── vite.config.ts            # Vite configuration
 ```
 
 ---
 
 ## 📖 Usage
 
-### Converting Documents
-
-1. **Launch** iownpdf from your applications folder
-2. **Drag & Drop** your file(s) onto the conversion zone
-3. **Select** your desired output format (PDF)
-4. **Configure** optional settings (page size, margins, etc.)
-5. **Click** Convert and wait for completion
-6. **Open** your converted PDF or the containing folder
+1. **Launch** iownpdf
+2. **Click** a conversion card (Markdown, Word, or PowerPoint)
+3. **Select** your file using the native file picker
+4. **Click** "Convert to PDF"
+5. The PDF is saved alongside your original file
 
 ### Supported Formats
 
 | Format | Extension | Status |
 |--------|-----------|--------|
-| Markdown | `.md` | 🚧 In Progress |
-| Word | `.docx` | 🚧 In Progress |
-| PowerPoint | `.pptx` | ⏳ Planned |
-| Excel | `.xlsx` | ⏳ Planned |
-| HTML | `.html` | ⏳ Planned |
-| Images | `.png`, `.jpg` | ⏳ Planned |
-| Text | `.txt` | ⏳ Planned |
+| Markdown | `.md`, `.markdown` | ✅ Working |
+| Word | `.docx` | ✅ Working |
+| PowerPoint | `.pptx` | ✅ Working |
+| PDF to Markdown | — | ⏳ Planned |
+| PDF to Word | — | ⏳ Planned |
+| PDF to PowerPoint | — | ⏳ Planned |
 
 ---
 
-## 🧪 Testing
+## 🎨 Design
 
-```bash
-# Run all tests
-bun --bun run test
+The UI follows an editorial brutalist aesthetic — sharp borders, hard box shadows, geometric forms, and high-contrast monochrome with accent colors per file type:
 
-# Run tests in watch mode
-bun --bun run test:watch
+- 🔵 **Blue** — Markdown conversions
+- 🟠 **Orange** — PowerPoint conversions
+- 🟣 **Purple** — Word conversions
 
-# Run tests with coverage
-bun --bun run test:coverage
-```
-
----
-
-## 🎨 Customization
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove demo pages in `src/routes/demo/`
-2. Replace Tailwind imports in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from plugins in `vite.config.ts`
-4. Uninstall packages: `bun remove @tailwindcss/vite tailwindcss`
-
-### Adding Custom Routes
-
-TanStack Router uses file-based routing. To add a new route:
-
-1. Create a new file in `src/routes/` (e.g., `src/routes/about.tsx`)
-2. The route will be automatically generated at `/about`
-
-Example:
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/about')({
-  component: AboutComponent,
-})
-
-function AboutComponent() {
-  return <h1>About Page</h1>
-}
-```
+Typography uses Fraunces (display) and Manrope (body) for a distinctive, editorial feel.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) (coming soon) first.
-
-### Development Setup
+Contributions are welcome!
 
 ```bash
-# Fork the repository
-# Clone your fork
+# Fork, clone, and install
 git clone https://github.com/YOUR_USERNAME/iownpdf.git
-
-# Install dependencies
-bun install
+cd iownpdf && bun install
 
 # Create a branch
 git checkout -b feature/your-feature
 
-# Make your changes and commit
-git commit -m "feat: add amazing feature"
+# Make changes, ensure lint passes
+bun run check
 
-# Push and create PR
+# Commit and push
+git commit -m "feat: add amazing feature"
 git push origin feature/your-feature
 ```
 
@@ -216,24 +171,18 @@ git push origin feature/your-feature
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see the [LICENSE](LICENSE) file.
 
 ---
 
 ## 🙏 Acknowledgments
 
-- Built with [TanStack Start](https://tanstack.com/start) and [Tauri](https://tauri.app)
-- Icons by [Lucide](https://lucide.dev)
-- Powered by [Vite](https://vitejs.dev)
+- Conversion engine: [iownpdf_core](crates/iownpdf_core/) (Rust)
+- Desktop framework: [Tauri](https://tauri.app)
+- UI library: [React](https://react.dev)
+- Icons: [Lucide](https://lucide.dev)
+- Fonts: [Fraunces](https://fraunces.undercase.xyz/) + [Manrope](https://manropefont.com/)
 
 ---
 
-## 📬 Contact
-
-- **Website:** [iownpdf.com](https://iownpdf.com) (coming soon)
-- **GitHub:** [github.com/iownpdf](https://github.com/yourusername/iownpdf)
-- **Issues:** [Report a bug](https://github.com/yourusername/iownpdf/issues)
-
----
-
-**Made with ❤️ using TanStack Start + Tauri**
+**Made with ❤️ using Rust & React**

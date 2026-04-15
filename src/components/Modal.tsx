@@ -6,9 +6,18 @@ interface ModalProps {
 	onClose: () => void;
 	title: string;
 	children: React.ReactNode;
+	accentColor?: string;
+	accentBg?: string;
 }
 
-export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export function Modal({
+	isOpen,
+	onClose,
+	title,
+	children,
+	accentColor = "var(--color-accent-blue)",
+	accentBg = "var(--color-accent-blue-subtle)",
+}: ModalProps) {
 	useEffect(() => {
 		function handleEscape(event: KeyboardEvent) {
 			if (event.key === "Escape") {
@@ -32,12 +41,13 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 	}
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center">
+		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+			{/* Backdrop */}
 			{/* biome-ignore lint/a11y/useSemanticElements: Backdrop overlay needs div element */}
 			<div
 				role="button"
 				tabIndex={0}
-				className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+				className="modal-backdrop fixed inset-0"
 				onClick={onClose}
 				onKeyDown={(e) => {
 					if (e.key === "Enter" || e.key === " ") {
@@ -46,18 +56,42 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 					}
 				}}
 			/>
-			<div className="relative z-50 w-full max-w-md transform rounded-2xl bg-white p-6 shadow-2xl transition-all">
-				<div className="flex items-center justify-between">
-					<h2 className="text-xl font-semibold text-gray-900">{title}</h2>
-					<button
-						type="button"
-						onClick={onClose}
-						className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-					>
-						<X className="h-5 w-5" />
-					</button>
+
+			{/* Modal panel */}
+			<div className="relative z-50 w-full max-w-lg animate-scale-in">
+				<div className="modal-panel">
+					{/* Header */}
+					<div className="flex items-center justify-between border-b-2 border-ink px-7 py-5">
+						<div className="flex items-center gap-4">
+							{/* Accent square */}
+							<div
+								className="flex h-8 w-8 items-center justify-center border-2 border-ink"
+								style={{ backgroundColor: accentBg }}
+							>
+								<div
+									className="h-3 w-3 border border-ink"
+									style={{ backgroundColor: accentColor }}
+								/>
+							</div>
+							<h2 className="font-display text-2xl font-bold text-ink tracking-tight">
+								{title}
+							</h2>
+						</div>
+						<button
+							type="button"
+							onClick={onClose}
+							className="flex h-9 w-9 items-center justify-center border-2 border-ink bg-surface-raised transition-all duration-150 hover:bg-ink"
+						>
+							<X className="h-4 w-4 text-ink transition-colors duration-150 hover:text-surface-raised" />
+						</button>
+					</div>
+
+					{/* Body */}
+					<div className="px-7 py-7">{children}</div>
+
+					{/* Bottom accent bar */}
+					<div className="h-1.5 w-full" style={{ backgroundColor: accentBg }} />
 				</div>
-				<div className="mt-4">{children}</div>
 			</div>
 		</div>
 	);

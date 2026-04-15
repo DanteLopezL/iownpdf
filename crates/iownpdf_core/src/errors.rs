@@ -1,41 +1,27 @@
-use std::{fmt, io, path::PathBuf};
+use std::path::PathBuf;
 
-#[derive(Debug)]
+use thiserror::Error;
+
+/// Errors that can occur during file conversion operations.
+#[derive(Debug, Error)]
 pub enum IownPdfError {
+    /// The specified file was not found.
+    #[error("file not found: {0}")]
     FileNotFound(PathBuf),
+
+    /// The file has an unsupported format.
+    #[error("unsupported format: expected .{expected}, got .{got}")]
     UnsupportedFormat { expected: String, got: String },
+
+    /// The file is missing an extension.
+    #[error("missing extension: {0}")]
     MissingExtension(PathBuf),
+
+    /// The conversion process failed.
+    #[error("conversion failed: {0}")]
     ConversionFailed(String),
-    Io(io::Error),
-}
 
-impl fmt::Display for IownPdfError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::FileNotFound(p) => write!(f, "file not found: {}", p.display()),
-            Self::UnsupportedFormat { expected, got } => {
-                write!(f, "unsupported format: expected .{expected}, got .{got}")
-            }
-            Self::MissingExtension(p) => write!(f, "missing extension: {}", p.display()),
-            Self::ConversionFailed(msg) => write!(f, "conversion failed: {msg}"),
-            Self::Io(e) => write!(f, "io error: {e}"),
-        }
-    }
-}
-
-impl std::error::Error for IownPdfError {
-    // optional: chain the source for Io variant
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            Self::Io(e) => Some(e),
-            _ => None,
-        }
-    }
-}
-
-// this is what makes ? work on io::Error
-impl From<io::Error> for IownPdfError {
-    fn from(e: io::Error) -> Self {
-        Self::Io(e)
-    }
+    /// An I/O error occurred.
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
 }

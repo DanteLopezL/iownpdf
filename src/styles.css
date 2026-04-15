@@ -1,7 +1,285 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 @theme {
+  --font-display: "Fraunces", Georgia, serif;
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Color tokens — light mode (default) */
+  --color-ink: #0a0a0a;
+  --color-ink-muted: #3a3a3a;
+  --color-ink-faint: #8a8a8a;
+  --color-surface: #fafafa;
+  --color-surface-raised: #ffffff;
+  --color-surface-depressed: #f0f0f0;
+  --color-border: #e0e0e0;
+  --color-border-strong: #c0c0c0;
+
+  /* Accent palettes per file type */
+  --color-accent-blue: #0055ff;
+  --color-accent-blue-subtle: #e8f0ff;
+  --color-accent-orange: #ff5500;
+  --color-accent-orange-subtle: #fff0e8;
+  --color-accent-purple: #6633ee;
+  --color-accent-purple-subtle: #f0e8ff;
+
+  /* Spacing */
+  --spacing-unit: 4px;
+
+  /* Shadows — sharp, not soft */
+  --shadow-hard: 4px 4px 0px 0px var(--color-ink);
+  --shadow-hover: 6px 6px 0px 0px var(--color-ink);
+  --shadow-active: 2px 2px 0px 0px var(--color-ink);
+}
+
+/* ====== Dark Mode ====== */
+[data-theme="dark"] {
+  --color-ink: #f0f0f0;
+  --color-ink-muted: #a0a0a0;
+  --color-ink-faint: #6a6a6a;
+  --color-surface: #0f0f0f;
+  --color-surface-raised: #1a1a1a;
+  --color-surface-depressed: #141414;
+  --color-border: #2a2a2a;
+  --color-border-strong: #3a3a3a;
+
+  /* Accent palettes adjusted for dark mode */
+  --color-accent-blue: #4d8aff;
+  --color-accent-blue-subtle: #1a2a4a;
+  --color-accent-orange: #ff7733;
+  --color-accent-orange-subtle: #3a2015;
+  --color-accent-purple: #8855ff;
+  --color-accent-purple-subtle: #2a1a4a;
+}
+
+/* ====== Global Reset & Base ====== */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+#app {
+  min-height: 100%;
+}
+
+.window-frame {
+  width: 100%;
+  min-height: 100%;
+}
+
+/* ====== Staggered Entrance Animations ====== */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes reveal-line {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulse-border {
+  0%,
+  100% {
+    border-color: var(--color-border);
+  }
+  50% {
+    border-color: var(--color-ink-faint);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-reveal-line {
+  animation: reveal-line 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-pulse-border {
+  animation: pulse-border 3s ease-in-out infinite;
+}
+
+/* Stagger delays */
+.stagger-1 {
+  animation-delay: 0.08s;
+}
+.stagger-2 {
+  animation-delay: 0.16s;
+}
+.stagger-3 {
+  animation-delay: 0.24s;
+}
+.stagger-4 {
+  animation-delay: 0.32s;
+}
+.stagger-5 {
+  animation-delay: 0.4s;
+}
+.stagger-6 {
+  animation-delay: 0.48s;
+}
+
+/* ====== Component: Brutalist Card ====== */
+.card-brutal {
+  position: relative;
+  border: 2px solid var(--color-ink);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-hard);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-brutal:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translate(-2px, -2px);
+}
+
+.card-brutal:active {
+  box-shadow: var(--shadow-active);
+  transform: translate(2px, 2px);
+}
+
+/* ====== Component: Sharp Button ====== */
+.btn-sharp {
+  position: relative;
+  border: 2px solid var(--color-ink);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-hard);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: var(--font-sans);
+  font-weight: 700;
+}
+
+.btn-sharp:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translate(-2px, -2px);
+}
+
+.btn-sharp:active {
+  box-shadow: var(--shadow-active);
+  transform: translate(2px, 2px);
+}
+
+/* ====== Component: Modal ====== */
+.modal-backdrop {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.modal-panel {
+  border: 2px solid var(--color-ink);
+  background: var(--color-surface-raised);
+  box-shadow: 8px 8px 0px 0px var(--color-ink);
+}
+
+/* ====== Typography Utilities ====== */
+.font-display {
+  font-family: var(--font-display);
+  font-variation-settings:
+    "SOFT" 50,
+    "WONK" 1;
+}
+
+.text-outline {
+  -webkit-text-stroke: 1.5px var(--color-ink);
+  -webkit-text-fill-color: transparent;
+}
+
+/* ====== Decorative ====== */
+.diagonal-hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 2px,
+    var(--color-border) 2px,
+    var(--color-border) 4px
+  );
+}
+
+.grid-pattern {
+  background-image:
+    linear-gradient(var(--color-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ====== Focus States ====== */
+*:focus-visible {
+  outline: 3px solid var(--color-accent-blue);
+  outline-offset: 2px;
+}
+
+/* ====== Selection ====== */
+::selection {
+  background: var(--color-accent-blue);
+  color: white;
 }

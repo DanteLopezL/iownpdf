@@ -4,59 +4,34 @@ A comprehensive roadmap for the iownpdf PDF conversion application.
 
 ## 🎯 Vision
 
-Create a beautiful, fast, and offline-first desktop application for converting various document formats to PDF.
+Create a beautiful, fast, and offline-first desktop application for converting various document formats to PDF — and back.
 
 ---
 
-## Phase 1: Foundation (Current)
+## Phase 1: Foundation ✅ (Complete)
 
 ### Core Setup
-- [x] Project initialization with TanStack Start
+- [x] Project initialization with TanStack Router
 - [x] Tauri desktop app setup
 - [x] TypeScript configuration
-- [x] Tailwind CSS styling
+- [x] Tailwind CSS v4 styling
 - [x] Biome linting & formatting
-- [x] Vitest testing setup
+- [x] Vite build configuration
+- [x] Editorial brutalist UI redesign
 
 ### MVP Features
-- [ ] **Home Page**
-  - Clean, modern UI with drag-and-drop zone
-  - File format selection
-  - Conversion status indicators
-  - Settings/preferences panel
+- [x] **Home Page**
+  - Bold editorial UI with geometric design language
+  - File format selection via native file picker (Tauri dialog plugin)
+  - Conversion status indicators (idle → converting → success/error)
+  - Staggered entrance animations
+- [x] **Markdown (`.md`) to PDF** — working via Rust `iownpdf_core`
+- [x] **Word (`.docx`) to PDF** — working via Rust `iownpdf_core`
+- [x] **PowerPoint (`.pptx`) to PDF** — working via Rust `iownpdf_core`
 
 ---
 
-## Phase 2: Core Conversion Features
-
-### Document Converters
-- [ ] **Markdown (`.md`) to PDF**
-  - Syntax highlighting for code blocks
-  - Table of contents generation
-  - Custom themes (light/dark)
-  - Preview before export
-
-- [ ] **Word (`.docx`) to PDF**
-  - Preserve formatting and styles
-  - Handle images and tables
-  - Support headers/footers
-  - Batch conversion support
-
-- [ ] **PowerPoint (`.pptx`) to PDF**
-  - Slide-by-slide conversion
-  - Maintain animations as static frames
-  - Handout mode (multiple slides per page)
-  - Notes inclusion option
-
-- [ ] **Excel (`.xlsx`) to PDF**
-  - Sheet selection
-  - Fit-to-page options
-  - Preserve formulas as values
-  - Maintain formatting and charts
-
----
-
-## Phase 3: Enhanced Features
+## Phase 2: Enhanced UX
 
 ### User Experience
 - [ ] Dark/Light theme toggle
@@ -70,7 +45,7 @@ Create a beautiful, fast, and offline-first desktop application for converting v
 - [ ] Conversion history
 - [ ] Recent files list
 - [ ] Keyboard shortcuts
-- [ ] Progress indicators for large files
+- [ ] Real-time progress indicators for large files
 
 ### File Management
 - [ ] Output folder selection
@@ -80,35 +55,29 @@ Create a beautiful, fast, and offline-first desktop application for converting v
 
 ---
 
+## Phase 3: Reverse Conversions
+
+### PDF Export Formats
+- [ ] **PDF to Markdown** — extract text and structure
+- [ ] **PDF to Word** — convert to editable `.docx`
+- [ ] **PDF to PowerPoint** — transform slides to `.pptx`
+
+---
+
 ## Phase 4: Advanced Features
 
-### Additional Formats
+### Additional Input Formats
+- [ ] Excel (`.xlsx`) to PDF
 - [ ] HTML to PDF
 - [ ] CSV to PDF
 - [ ] Image formats (PNG, JPG) to PDF
 - [ ] Text files (`.txt`) to PDF
 - [ ] RTF to PDF
-- [ ] **PDF to JPG** (Image Export)
-  - Export all pages as images
-  - Select specific pages
-  - Resolution/quality settings
-  - Batch export support
 
 ### PDF Tools
-- [ ] **Watermark PDF**
-  - Text watermarks (custom font, size, opacity)
-  - Image watermarks (logo support)
-  - Position control (tiling, center, corners)
-  - Apply to single or all pages
-
-- [ ] **Sign PDF**
-  - Draw signature with mouse/trackpad
-  - Upload signature image
-  - Save multiple signatures
-  - Place and resize on pages
-  - Digital signature support (future)
-
-### Premium Features
+- [ ] **PDF to JPG** — export pages as images with resolution control
+- [ ] **Watermark PDF** — text/image watermarks with position control
+- [ ] **Sign PDF** — draw or upload signature
 - [ ] PDF merging
 - [ ] PDF splitting
 - [ ] Password protection
@@ -120,7 +89,7 @@ Create a beautiful, fast, and offline-first desktop application for converting v
 
 ### Release Preparation
 - [ ] App icon and branding
-- [ ] Installer packages for macOS
+- [ ] Installer packages for macOS (`.dmg`)
 - [ ] Auto-update functionality
 - [ ] Documentation and help guides
 - [ ] Performance optimization
@@ -128,6 +97,8 @@ Create a beautiful, fast, and offline-first desktop application for converting v
 
 ### Platform Support
 - [ ] macOS (`.dmg`, `.app`)
+- [ ] Windows (`.exe`, `.msi`)
+- [ ] Linux (`.AppImage`, `.deb`)
 
 ---
 
@@ -157,13 +128,12 @@ Create a beautiful, fast, and offline-first desktop application for converting v
 
 | Feature | Impact | Effort | Priority |
 |---------|--------|--------|----------|
-| Home Page | High | Low | P0 |
-| MD to PDF | High | Medium | P0 |
-| DOCX to PDF | High | High | P1 |
-| PPTX to PDF | Medium | High | P2 |
-| XLSX to PDF | Medium | High | P2 |
-| Batch Conversion | High | Medium | P1 |
+| MD/DOCX/PPTX to PDF | High | Done | ✅ |
+| Batch Conversion | High | Medium | P0 |
 | Dark Mode | Medium | Low | P1 |
+| Output folder selection | High | Low | P1 |
+| PDF to Markdown | High | Medium | P1 |
+| PDF to Word | High | High | P2 |
 | PDF to JPG | High | Low | P1 |
 | Watermark PDF | Medium | Medium | P2 |
 | Sign PDF | High | Medium | P1 |
@@ -177,4 +147,4 @@ Want to help? Check out our [Contributing Guide](CONTRIBUTING.md) (coming soon).
 
 ---
 
-**Last Updated:** March 24, 2026
+**Last Updated:** April 7, 2026

@@ -1,24 +1,23 @@
-use crate::{errors::IownPdfError, utils::validator::validate_input};
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
+use crate::{converter::FileConverter, errors::IownPdfError, utils::validator::validate_input};
+
+/// Converter for Markdown files to PDF.
 #[derive(Debug)]
 pub struct MdConverter {
     file: PathBuf,
 }
 
-impl MdConverter {
-    pub fn new(file: &Path) -> Result<Self, IownPdfError> {
+impl FileConverter for MdConverter {
+    fn new(file: &Path) -> Result<Self, IownPdfError> {
         validate_input(file, "md")?;
         Ok(Self {
             file: file.to_path_buf(),
         })
     }
 
-    pub fn to_pdf(self) -> Result<PathBuf, IownPdfError> {
-        let md_content = fs::read_to_string(&self.file).map_err(IownPdfError::Io)?;
+    fn to_pdf(self) -> Result<PathBuf, IownPdfError> {
+        let md_content = std::fs::read_to_string(&self.file).map_err(IownPdfError::Io)?;
         let output_path = self.file.with_extension("pdf");
         let output_str = output_path.to_str().ok_or_else(|| {
             IownPdfError::ConversionFailed("output path contains invalid UTF-8".to_string())
@@ -92,7 +91,7 @@ mod tests {
         let file_path = dir.path().join("test.md");
         fs::write(&file_path, "# Hello\n\nWorld").unwrap();
         let output = MdConverter::new(&file_path).unwrap().to_pdf().unwrap();
-        assert!(fs::metadata(&output).unwrap().len() > 0);
+        assert!(std::fs::metadata(&output).unwrap().len() > 0);
     }
 
     #[test]
