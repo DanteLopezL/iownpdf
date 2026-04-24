@@ -1,17 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
 	ArrowRight,
 	CheckCircle2,
 	FileEdit,
 	FileText,
+	FolderOpen,
 	Loader2,
 	Presentation,
 	Shield,
 	XCircle,
 	Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { BatchModal } from "#/components/BatchModal";
 import { ComingSoonCard } from "#/components/ComingSoonCard";
 import { ConvertButton } from "#/components/ConvertButton";
 import { Modal } from "#/components/Modal";
@@ -75,6 +78,14 @@ const comingSoonConfigs = [
 	},
 ];
 
+function inferFileType(path: string): FileType {
+	const ext = path.split(".").pop()?.toLowerCase() ?? "";
+	if (ext === "md" || ext === "markdown") return "md";
+	if (ext === "docx") return "docx";
+	if (ext === "pptx") return "pptx";
+	return null;
+}
+
 function App() {
 	const [openModal, setOpenModal] = useState<FileType>(null);
 	const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
@@ -83,6 +94,33 @@ function App() {
 		useState<ConversionState>("idle");
 	const [error, setError] = useState<string | null>(null);
 	const [successPath, setSuccessPath] = useState<string | null>(null);
+	const [outputDir, setOutputDir] = useState<string | null>(null);
+	const [batchFiles, setBatchFiles] = useState<string[]>([]);
+	const [isBatchOpen, setIsBatchOpen] = useState(false);
+
+	async function pickOutputDir(): Promise<string | null> {
+		try {
+			const dir = await invoke<string | null>("pick_folder");
+			return dir ?? null;
+		} catch (err) {
+			console.error("pick_folder failed", err);
+			return null;
+		}
+	}
+
+	async function handlePickOutputDir() {
+		const dir = await pickOutputDir();
+		if (dir) setOutputDir(dir);
+	}
+
+	async function handleRevealOutput() {
+		if (!successPath) return;
+		try {
+			await invoke("reveal_in_folder", { path: successPath });
+		} catch (err) {
+			console.error("reveal_in_folder failed", err);
+		}
+	}
 
 	async function handlePickFile() {
 		if (!openModal) return;
@@ -94,7 +132,7 @@ function App() {
 
 			if (!filePath) return;
 
-			const fileName = filePath.split("/").pop() || filePath;
+			const fileName = filePath.split(/[\\/]/).pop() || filePath;
 
 			setSelectedFilePath(filePath);
 			setSelectedFileName(fileName);
@@ -115,16 +153,10 @@ function App() {
 		setError(null);
 
 		try {
-			const commandMap = {
-				md: "convert_md_to_pdf",
-				docx: "convert_docx_to_pdf",
-				pptx: "convert_pptx_to_pdf",
-			};
-
-			const command = commandMap[openModal];
-
-			const outputPath = await invoke<string>(command, {
+			const outputPath = await invoke<string>("convert_to_pdf", {
 				filePath: selectedFilePath,
+				fileType: openModal,
+				outputDir,
 			});
 
 			setConversionState("success");
@@ -152,6 +184,56 @@ function App() {
 		setError(null);
 		setSuccessPath(null);
 	}
+
+	function handleCloseBatch() {
+		setIsBatchOpen(false);
+		setBatchFiles([]);
+	}
+
+	useEffect(() => {
+		let unlisten: (() => void) | null = null;
+		let cancelled = false;
+
+		getCurrentWindow()
+			.onDragDropEvent((event) => {
+				if (event.payload.type !== "drop") return;
+				const paths = event.payload.paths;
+				if (paths.length === 0) return;
+
+				// Single supported file → open the type-specific modal pre-populated.
+				if (paths.length === 1) {
+					const path = paths[0];
+					const kind = inferFileType(path);
+					if (!kind) return;
+					const fileName = path.split(/[\\/]/).pop() || path;
+					setOpenModal(kind);
+					setSelectedFilePath(path);
+					setSelectedFileName(fileName);
+					setConversionState("idle");
+					setError(null);
+					setSuccessPath(null);
+					return;
+				}
+
+				// Multiple files → batch modal with only supported ones.
+				const supported = paths.filter((p) => inferFileType(p) !== null);
+				if (supported.length === 0) return;
+				setBatchFiles(supported);
+				setIsBatchOpen(true);
+			})
+			.then((u) => {
+				if (cancelled) {
+					u();
+					return;
+				}
+				unlisten = u;
+			});
+
+		return () => {
+			cancelled = true;
+			unlisten?.();
+		};
+	}, []);
 
 	const currentConfig = openModal ? fileConfigs[openModal] : null;
 
@@ -208,7 +290,7 @@ function App() {
 				{/* ====== CONVERSION CARDS ====== */}
 				<section className="mb-20">
 					{/* Section header */}
-					<div className="mb-8 flex items-end gap-4">
+					<div className="mb-4 flex items-end gap-4">
 						<h2 className="font-display text-3xl font-bold text-ink tracking-tight">
 							Convert to PDF
 						</h2>
@@ -217,6 +299,11 @@ function App() {
 							01 / Input
 						</span>
 					</div>
+
+					{/* Drop hint */}
+					<p className="mb-8 font-mono text-[10px] uppercase tracking-widest text-ink-faint">
+						Tip &middot; drop files anywhere to start a single or batch convert
+					</p>
 
 					{/* Cards grid — asymmetric: first card spans 2 cols on md */}
 					<div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -303,6 +390,15 @@ function App() {
 				</footer>
 			</div>
 
+			{/* ====== BATCH MODAL ====== */}
+			<BatchModal
+				isOpen={isBatchOpen}
+				onClose={handleCloseBatch}
+				files={batchFiles}
+				outputDir={outputDir}
+				onPickOutputDir={pickOutputDir}
+			/>
+
 			{/* ====== MODAL ====== */}
 			{currentConfig && (
 				<Modal
@@ -330,7 +426,9 @@ function App() {
 											Conversion Successful
 										</h3>
 										<p className="mt-1 text-sm text-ink-muted">
-											PDF saved alongside your original file
+											{outputDir
+												? "PDF saved to your chosen folder"
+												: "PDF saved alongside your original file"}
 										</p>
 										<div className="mt-3 border-t border-border pt-3">
 											<p className="font-mono text-xs text-ink-muted break-all">
@@ -340,14 +438,24 @@ function App() {
 									</div>
 								</div>
 							</div>
-							<button
-								type="button"
-								onClick={handleCloseModal}
-								className="btn-sharp flex w-full items-center justify-center gap-2 px-4 py-3.5 text-sm"
-							>
-								<span>Close</span>
-								<ArrowRight className="h-4 w-4" />
-							</button>
+							<div className="flex items-center gap-3">
+								<button
+									type="button"
+									onClick={handleRevealOutput}
+									className="btn-sharp flex flex-1 items-center justify-center gap-2 px-4 py-3.5 text-sm"
+								>
+									<FolderOpen className="h-4 w-4" />
+									<span>Open folder</span>
+								</button>
+								<button
+									type="button"
+									onClick={handleCloseModal}
+									className="btn-sharp flex flex-1 items-center justify-center gap-2 px-4 py-3.5 text-sm"
+								>
+									<span>Close</span>
+									<ArrowRight className="h-4 w-4" />
+								</button>
+							</div>
 						</div>
 					) : conversionState === "converting" ? (
 						<div className="flex flex-col items-center border-2 border-ink p-10 text-center bg-surface-depressed">
@@ -379,6 +487,28 @@ function App() {
 						</div>
 					) : (
 						<div className="space-y-5">
+							{/* Output folder control */}
+							<div className="border-2 border-ink bg-surface-depressed p-4">
+								<div className="flex items-center justify-between gap-3">
+									<div className="min-w-0 flex-1">
+										<p className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
+											Output folder
+										</p>
+										<p className="mt-1 truncate text-sm text-ink">
+											{outputDir ?? "Alongside the input file"}
+										</p>
+									</div>
+									<button
+										type="button"
+										onClick={handlePickOutputDir}
+										className="flex items-center gap-2 border-2 border-ink bg-surface-raised px-3 py-2 text-xs font-bold uppercase tracking-wider text-ink transition-colors hover:bg-ink hover:text-surface-raised"
+									>
+										<FolderOpen className="h-3.5 w-3.5" />
+										{outputDir ? "Change" : "Choose"}
+									</button>
+								</div>
+							</div>
+
 							{/* File picker button */}
 							<button
 								type="button"

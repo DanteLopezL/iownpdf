@@ -17,7 +17,7 @@ Create a beautiful, fast, and offline-first desktop application for converting v
 - [x] Tailwind CSS v4 styling with design tokens
 - [x] Biome linting & formatting
 - [x] Vite 7 build configuration
-- [x] Vitest + Testing Library wired up (no specs yet)
+- [x] Vitest + Testing Library wired up (no frontend specs yet; Rust side has 34 passing tests in `iownpdf_core`)
 - [x] Editorial brutalist UI redesign
 
 ### Shell & Chrome
@@ -46,13 +46,19 @@ Create a beautiful, fast, and offline-first desktop application for converting v
 
 Highest-impact, lowest-friction improvements. All leverage the existing `FileConverter` trait and `tauri_plugin_dialog`.
 
+### Converter Foundation ✅
+- [x] **`FileConverter::to_pdf` takes `Option<&Path>`** — each converter honors a user-supplied output directory, falling back to `input.with_extension("pdf")` when `None`
+- [x] **`resolve_output_path` helper** in `utils/validator.rs` — single source of truth for path resolution; rejects missing / non-directory paths via `IownPdfError::InvalidOutputDir`; preserves multi-dot stems (`my.draft.docx` → `my.draft.pdf`)
+- [x] **Factory dispatch** — `FileType::convert(input, output_dir)` in `src-tauri/src/lib.rs` replaces per-type glue; unblocks batch conversion
+- [x] **Single Tauri command** — `convert_to_pdf(file_path, file_type, output_dir)` replaces the three `convert_*_to_pdf` commands; frontend calls one `invoke` with `outputDir: null` as the hook for the UI work below
+
 ### File Management
-- [ ] **Output folder selection** — Extend `FileConverter::to_pdf` (or add a `to_pdf_at(output_dir)` variant) so each converter can honor a user-supplied directory, falling back to `input.with_extension("pdf")`. Use `tauri_plugin_dialog` folder picker in the modal.
+- [ ] **Output folder picker (UI)** — Add a folder-picker button in the `Modal` using `tauri_plugin_dialog`; surface the chosen path and thread it through the `outputDir` arg already plumbed in the frontend
 - [ ] **Open containing folder after conversion** — New `reveal_in_folder` Tauri command using `tauri-plugin-opener` (preferred over hand-rolling per-platform `open` / `explorer` / `xdg-open`). Surface as a button in the modal's success state.
 
 ### Productivity
 - [ ] **Drag-and-drop** — Accept drops on the home page; infer `FileType` from extension and open the corresponding modal pre-populated. Use Tauri's `onDragDropEvent` on the window.
-- [ ] **Batch conversion** — Add `batch_convert(Vec<{path, file_type}>)` Tauri command. Introduce a factory dispatch (`FileType` enum → converter instantiation) to avoid repeating the per-converter glue. Return a `BatchResult { successes, failures }` struct.
+- [ ] **Batch conversion** — Add `batch_convert(Vec<{path, file_type}>)` Tauri command. Reuses the existing `FileType::convert` dispatcher. Return a `BatchResult { successes, failures }` struct.
 - [ ] **Real-time progress for batch** — Emit `batch-progress` events from the Rust side (`AppHandle::emit`). Frontend subscribes and renders per-file progress rows.
 
 ### Milestone: v0.2 — "Practical"
@@ -63,17 +69,19 @@ Highest-impact, lowest-friction improvements. All leverage the existing `FileCon
 
 ## Phase 3: Testing & CI Foundation (v0.2.1)
 
-*Estimated: 1 week | Dependencies: none — tooling is already installed*
+*Estimated: 1 week | Dependencies: none*
 
-Vitest and Testing Library are in `package.json` but unused. Establish the pattern now, before the frontend grows another 10 components.
+Rust tests already exist (34 passing in `iownpdf_core` as of the Phase 2 refactor). The frontend has Vitest + Testing Library wired up but no specs yet, and there is no CI pipeline. Close both gaps before the surface area grows.
+
+### Rust Core
+- [x] **Unit tests for `utils/validator.rs`** — `validate_input` edge cases (missing file, wrong extension, case sensitivity, multi-extension files) plus `resolve_output_path` (no dir, valid dir, multi-dot stems, missing dir, file-as-dir)
+- [x] **Converter construction tests** — `MdConverter`, `DocxConverter`, `PptxConverter` construction paths covered
+- [x] **End-to-end Markdown conversion** — `test_to_pdf_produces_file`, `test_to_pdf_honors_output_dir`, `test_to_pdf_rejects_missing_output_dir`
+- [ ] **End-to-end DOCX/PPTX conversion** with small real fixture files under `tests/fixtures/` (currently gated by needing sample files)
 
 ### Frontend
 - [ ] First specs for `Modal`, `ConvertButton`, and the conversion state machine in `routes/index.tsx`
 - [ ] Co-locate `*.test.tsx` with components; wire `bun run test` into the default dev loop
-
-### Rust Core
-- [ ] Integration tests for `MdConverter`, `DocxConverter`, `PptxConverter` using `tempfile` (already a dev-dep) with small fixture files
-- [ ] Unit tests for `utils/validator.rs` edge cases (missing file, wrong extension, unreadable path)
 
 ### CI
 - [ ] **GitHub Actions** — matrix on `macos-latest`, `ubuntu-latest`, `windows-latest`: `cargo test`, `bun run check`, `bun run test`, `bunx tauri build --debug`
@@ -268,4 +276,4 @@ Want to help? Check out our [Contributing Guide](CONTRIBUTING.md) (coming soon).
 
 ---
 
-**Last Updated:** April 24, 2026
+**Last Updated:** April 24, 2026 _(Phase 2 converter foundation landed)_
