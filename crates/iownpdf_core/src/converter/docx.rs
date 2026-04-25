@@ -1,6 +1,10 @@
 use std::path::{Path, PathBuf};
 
-use crate::{converter::FileConverter, errors::IownPdfError, utils::validator::validate_input};
+use crate::{
+    converter::FileConverter,
+    errors::IownPdfError,
+    utils::validator::{resolve_output_path, validate_input},
+};
 
 /// Converter for DOCX files to PDF.
 #[derive(Debug)]
@@ -16,8 +20,8 @@ impl FileConverter for DocxConverter {
         })
     }
 
-    fn to_pdf(self) -> Result<PathBuf, IownPdfError> {
-        let output_path = self.file.with_extension("pdf");
+    fn to_pdf(self, output_dir: Option<&Path>) -> Result<PathBuf, IownPdfError> {
+        let output_path = resolve_output_path(&self.file, output_dir)?;
 
         let result = office2pdf::convert(&self.file)
             .map_err(|e| IownPdfError::ConversionFailed(e.to_string()))?;

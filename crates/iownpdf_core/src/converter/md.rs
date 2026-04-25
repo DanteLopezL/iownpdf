@@ -1,6 +1,10 @@
 use std::path::{Path, PathBuf};
 
-use crate::{converter::FileConverter, errors::IownPdfError, utils::validator::validate_input};
+use crate::{
+    converter::FileConverter,
+    errors::IownPdfError,
+    utils::validator::{resolve_output_path, validate_input},
+};
 
 /// Converter for Markdown files to PDF.
 #[derive(Debug)]
@@ -16,9 +20,9 @@ impl FileConverter for MdConverter {
         })
     }
 
-    fn to_pdf(self) -> Result<PathBuf, IownPdfError> {
+    fn to_pdf(self, output_dir: Option<&Path>) -> Result<PathBuf, IownPdfError> {
         let md_content = std::fs::read_to_string(&self.file).map_err(IownPdfError::Io)?;
-        let output_path = self.file.with_extension("pdf");
+        let output_path = resolve_output_path(&self.file, output_dir)?;
         let output_str = output_path.to_str().ok_or_else(|| {
             IownPdfError::ConversionFailed("output path contains invalid UTF-8".to_string())
         })?;
@@ -80,7 +84,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("test.md");
         fs::write(&file_path, "# Hello\n\nWorld").unwrap();
-        let output = MdConverter::new(&file_path).unwrap().to_pdf().unwrap();
+        let output = MdConverter::new(&file_path).unwrap().to_pdf(None).unwrap();
         assert!(output.exists());
         assert_eq!(output.extension().unwrap(), "pdf");
     }
@@ -90,7 +94,7 @@ mod tests {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("test.md");
         fs::write(&file_path, "# Hello\n\nWorld").unwrap();
-        let output = MdConverter::new(&file_path).unwrap().to_pdf().unwrap();
+        let output = MdConverter::new(&file_path).unwrap().to_pdf(None).unwrap();
         assert!(std::fs::metadata(&output).unwrap().len() > 0);
     }
 
@@ -99,7 +103,37 @@ mod tests {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("document.md");
         fs::write(&file_path, "content").unwrap();
-        let output = MdConverter::new(&file_path).unwrap().to_pdf().unwrap();
+        let output = MdConverter::new(&file_path).unwrap().to_pdf(None).unwrap();
         assert_eq!(output, dir.path().join("document.pdf"));
+    }
+
+    #[test]
+    fn test_to_pdf_honors_output_dir() {
+        let src_dir = tempdir().unwrap();
+        let out_dir = tempdir().unwrap();
+        let file_path = src_dir.path().join("report.md");
+        fs::write(&file_path, "# Hello").unwrap();
+
+        let output = MdConverter::new(&file_path)
+            .unwrap()
+            .to_pdf(Some(out_dir.path()))
+            .unwrap();
+
+        assert_eq!(output, out_dir.path().join("report.pdf"));
+        assert!(output.exists());
+    }
+
+    #[test]
+    fn test_to_pdf_rejects_missing_output_dir() {
+        let src_dir = tempdir().unwrap();
+        let file_path = src_dir.path().join("report.md");
+        fs::write(&file_path, "# Hello").unwrap();
+
+        let err = MdConverter::new(&file_path)
+            .unwrap()
+            .to_pdf(Some(Path::new("/definitely/not/a/real/dir")))
+            .unwrap_err();
+
+        assert!(matches!(err, IownPdfError::InvalidOutputDir(_)));
     }
 }
