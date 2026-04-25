@@ -40,9 +40,7 @@ Create a beautiful, fast, and offline-first desktop application for converting v
 
 ---
 
-## Phase 2: Core UX Improvements (v0.2)
-
-*Estimated: 2–3 weeks | Dependencies: none*
+## Phase 2: Core UX Improvements ✅ (v0.2)
 
 Highest-impact, lowest-friction improvements. All leverage the existing `FileConverter` trait and `tauri_plugin_dialog`.
 
@@ -52,18 +50,18 @@ Highest-impact, lowest-friction improvements. All leverage the existing `FileCon
 - [x] **Factory dispatch** — `FileType::convert(input, output_dir)` in `src-tauri/src/lib.rs` replaces per-type glue; unblocks batch conversion
 - [x] **Single Tauri command** — `convert_to_pdf(file_path, file_type, output_dir)` replaces the three `convert_*_to_pdf` commands; frontend calls one `invoke` with `outputDir: null` as the hook for the UI work below
 
-### File Management
-- [ ] **Output folder picker (UI)** — Add a folder-picker button in the `Modal` using `tauri_plugin_dialog`; surface the chosen path and thread it through the `outputDir` arg already plumbed in the frontend
-- [ ] **Open containing folder after conversion** — New `reveal_in_folder` Tauri command using `tauri-plugin-opener` (preferred over hand-rolling per-platform `open` / `explorer` / `xdg-open`). Surface as a button in the modal's success state.
+### File Management ✅
+- [x] **Output folder picker (UI)** — `pick_folder` Tauri command + folder-picker button in `Modal` and `BatchModal`; chosen path is threaded through the `outputDir` arg
+- [x] **Open containing folder after conversion** — `reveal_in_folder` Tauri command via `tauri-plugin-opener`; surfaced as the "Open folder" button in the modal's success state and at the end of a batch run
 
-### Productivity
-- [ ] **Drag-and-drop** — Accept drops on the home page; infer `FileType` from extension and open the corresponding modal pre-populated. Use Tauri's `onDragDropEvent` on the window.
-- [ ] **Batch conversion** — Add `batch_convert(Vec<{path, file_type}>)` Tauri command. Reuses the existing `FileType::convert` dispatcher. Return a `BatchResult { successes, failures }` struct.
-- [ ] **Real-time progress for batch** — Emit `batch-progress` events from the Rust side (`AppHandle::emit`). Frontend subscribes and renders per-file progress rows.
+### Productivity ✅
+- [x] **Drag-and-drop** — `getCurrentWindow().onDragDropEvent` on the home page: a single supported file pre-populates the matching modal; multiple supported files open `BatchModal`
+- [x] **Batch conversion** — `batch_convert(file_paths, output_dir)` Tauri command reuses the `FileType::convert` dispatcher; returns `BatchResult { successes, failures }`
+- [x] **Real-time progress for batch** — `AppHandle::emit("batch-progress", …)` per processed file; `BatchModal` subscribes via `listen` and renders per-file pending / success / error rows
 
-### Milestone: v0.2 — "Practical"
+### Milestone: v0.2 — "Practical" ✅
 - Output folder selection, batch conversion, drag-and-drop, open containing folder.
-- The app goes from "single-file converter" to something actually useful for daily work.
+- The app went from "single-file converter" to something actually useful for daily work.
 
 ---
 
@@ -257,8 +255,8 @@ High-effort, low-demand, or blocked on external tooling that may not be viable:
 | Version | Focus | Status |
 |---------|-------|--------|
 | **v0.1** | Foundation: three converters, theming, custom chrome | ✅ Shipped |
-| **v0.2** | Output folder, batch conversion, drag-and-drop | Next |
-| **v0.2.1** | Tests + CI on all platforms | Parallel with v0.2 |
+| **v0.2** | Output folder, batch conversion, drag-and-drop, reveal-in-folder | ✅ Shipped |
+| **v0.2.1** | Tests + CI on all platforms | Next |
 | **v0.3** | Persistent preferences, recent files, keyboard shortcuts | — |
 | **v0.4** | PDF toolkit: JPG, merge, split, watermark, image→PDF | — |
 | **v0.5** | Reverse: PDF→Markdown (and maybe PDF→Word) | — |
@@ -276,4 +274,4 @@ Want to help? Check out our [Contributing Guide](CONTRIBUTING.md) (coming soon).
 
 ---
 
-**Last Updated:** April 24, 2026 _(Phase 2 converter foundation landed)_
+**Last Updated:** April 24, 2026 _(Phase 2 shipped — v0.2 "Practical")_

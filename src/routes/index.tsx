@@ -382,7 +382,7 @@ function App() {
 						</div>
 						<div className="flex items-center gap-6">
 							<span className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
-								v0.1.0
+								v0.2.0
 							</span>
 							<div className="h-3 w-3 border-2 border-ink-faint bg-ink-faint" />
 						</div>
