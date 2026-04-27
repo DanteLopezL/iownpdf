@@ -9,6 +9,10 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Modal } from "#/components/Modal";
+import {
+	type RecentFileType,
+	usePreferences,
+} from "#/context/PreferencesContext";
 
 type ItemStatus = "pending" | "success" | "error";
 
@@ -41,6 +45,14 @@ function basename(path: string): string {
 	return parts[parts.length - 1] || path;
 }
 
+function inferRecentType(path: string): RecentFileType | null {
+	const ext = path.split(".").pop()?.toLowerCase() ?? "";
+	if (ext === "md" || ext === "markdown") return "md";
+	if (ext === "docx") return "docx";
+	if (ext === "pptx") return "pptx";
+	return null;
+}
+
 export function BatchModal({
 	isOpen,
 	onClose,
@@ -48,12 +60,14 @@ export function BatchModal({
 	outputDir,
 	onPickOutputDir,
 }: BatchModalProps) {
+	const { prefs, addRecentFile } = usePreferences();
 	const [items, setItems] = useState<BatchItem[]>([]);
 	const [phase, setPhase] = useState<"idle" | "running" | "done">("idle");
 	const [localOutputDir, setLocalOutputDir] = useState<string | null>(
 		outputDir,
 	);
 	const unlistenRef = useRef<UnlistenFn | null>(null);
+	const autoRevealedRef = useRef(false);
 
 	useEffect(() => {
 		if (!isOpen) return;
@@ -66,6 +80,7 @@ export function BatchModal({
 		);
 		setPhase("idle");
 		setLocalOutputDir(outputDir);
+		autoRevealedRef.current = false;
 	}, [isOpen, files, outputDir]);
 
 	useEffect(() => {
@@ -79,6 +94,8 @@ export function BatchModal({
 				prev.map((row) => {
 					if (row.filePath !== item.file_path) return row;
 					if (item.status === "success") {
+						const kind = inferRecentType(item.file_path);
+						if (kind) addRecentFile(kind, item.file_path);
 						return {
 							...row,
 							status: "success",
@@ -105,7 +122,18 @@ export function BatchModal({
 			unlistenRef.current?.();
 			unlistenRef.current = null;
 		};
-	}, [isOpen]);
+	}, [isOpen, addRecentFile]);
+
+	useEffect(() => {
+		if (phase !== "done" || autoRevealedRef.current) return;
+		if (!prefs.openFolderAfterConvert) return;
+		const firstOutput = items.find((i) => i.outputPath)?.outputPath;
+		if (!firstOutput) return;
+		autoRevealedRef.current = true;
+		invoke("reveal_in_folder", { path: firstOutput }).catch((err) => {
+			console.error("reveal_in_folder failed", err);
+		});
+	}, [phase, items, prefs.openFolderAfterConvert]);
 
 	async function handleRun() {
 		setPhase("running");
@@ -159,6 +187,12 @@ export function BatchModal({
 						<div className="min-w-0 flex-1">
 							<p className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
 								Output folder
+								{localOutputDir &&
+									localOutputDir === prefs.defaultOutputDir && (
+										<span className="ml-2 text-ink-faint normal-case">
+											(default)
+										</span>
+									)}
 							</p>
 							<p className="mt-1 truncate text-sm text-ink">
 								{localOutputDir ?? "Alongside each input file"}
