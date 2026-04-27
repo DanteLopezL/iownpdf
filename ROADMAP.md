@@ -75,18 +75,6 @@ Rust tests already exist (34 passing in `iownpdf_core` as of the Phase 2 refacto
 - [x] **Unit tests for `utils/validator.rs`** — `validate_input` edge cases (missing file, wrong extension, case sensitivity, multi-extension files) plus `resolve_output_path` (no dir, valid dir, multi-dot stems, missing dir, file-as-dir)
 - [x] **Converter construction tests** — `MdConverter`, `DocxConverter`, `PptxConverter` construction paths covered
 - [x] **End-to-end Markdown conversion** — `test_to_pdf_produces_file`, `test_to_pdf_honors_output_dir`, `test_to_pdf_rejects_missing_output_dir`
-- [ ] **End-to-end DOCX/PPTX conversion** with small real fixture files under `tests/fixtures/` (currently gated by needing sample files)
-
-### Frontend
-- [ ] First specs for `Modal`, `ConvertButton`, and the conversion state machine in `routes/index.tsx`
-- [ ] Co-locate `*.test.tsx` with components; wire `bun run test` into the default dev loop
-
-### CI
-- [ ] **GitHub Actions** — matrix on `macos-latest`, `ubuntu-latest`, `windows-latest`: `cargo test`, `bun run check`, `bun run test`, `bunx tauri build --debug`
-- [ ] Cache `~/.cargo`, `target/`, and `~/.bun/install/cache` to keep CI under ~5 min
-
-### Milestone: v0.2.1 — "Confidence"
-- CI green on all three platforms with meaningful coverage for the Rust core and the modal flow.
 
 ---
 
@@ -99,10 +87,6 @@ Dark mode already uses `localStorage`. Consolidate user prefs into one persisted
 - [ ] **Preferences store** — `tauri-plugin-store` for durable JSON at the OS config dir; migrate the `theme` key out of `localStorage` for parity between web preview and desktop
 - [ ] **Settings panel** — Slide-in sheet or dedicated route; fields: theme, default output folder, "open folder after convert" toggle, "confirm before overwrite" toggle
 - [ ] **Recent files list** — Persist last N files per type; quick-access section in each modal
-- [ ] **Keyboard shortcuts** — `Cmd/Ctrl+O` open picker, `Cmd/Ctrl+Enter` convert, `Esc` close modal, `Cmd/Ctrl+,` open settings
-
-### Milestone: v0.3 — "Yours"
-- Persistent preferences, recent files, keyboard-driven workflow.
 
 ---
 
