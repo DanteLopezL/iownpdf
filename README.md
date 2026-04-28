@@ -9,12 +9,17 @@ A desktop application built with Tauri and React that converts Markdown, Word, a
 ## ✨ Features
 
 - 🎨 **Bold Editorial UI** — Brutalist design with sharp geometry and clear typographic hierarchy
-- 🌓 **Light & Dark Mode** — System-aware theme with one-click toggle, persisted across sessions
+- 🌓 **Light & Dark Mode** — System-aware theme with one-click toggle, persisted via preferences store
 - 🪟 **Custom Window Chrome** — Frameless title bar with integrated theme toggle and window controls
 - ⚡ **Native Performance** — Powered by Rust (`iownpdf_core`) for fast conversions
 - 🔒 **100% Local** — Your files never leave your machine
 - 📦 **Multi-Format** — Convert `.md`, `.docx`, and `.pptx` to PDF
 - 🖥️ **Desktop App** — Native file picker integration via Tauri dialog plugin
+- 🗂️ **Batch Conversion** — Select multiple files at once; per-file real-time progress
+- 🖱️ **Drag & Drop** — Drop files onto the home screen to open the matching converter
+- 📂 **Output Folder** — Choose a destination folder or default to alongside the source file
+- ⚙️ **Persistent Preferences** — Settings panel for theme, default output folder, post-convert reveal, and overwrite behavior
+- 🕒 **Recent Files** — Quick-access list of previously converted files per format
 
 ---
 
@@ -107,10 +112,11 @@ iownpdf/
 │   │   ├── ComingSoonCard    # Placeholder for planned features
 │   │   ├── ConvertButton     # Conversion action card
 │   │   ├── CustomTitleBar    # Frameless window chrome
-│   │   ├── Modal             # File picker & conversion modal
-│   │   └── ThemeToggle       # Light / dark switcher
+│   │   ├── Modal             # Single-file picker & conversion modal
+│   │   ├── BatchModal        # Multi-file conversion with per-file progress
+│   │   └── SettingsModal     # Preferences panel (theme, output folder, toggles)
 │   ├── context/
-│   │   └── ThemeContext      # Theme state + localStorage persistence
+│   │   └── ThemeContext      # Theme state, synced to tauri-plugin-store
 │   ├── lib/                  # Utilities (conversion helpers)
 │   ├── styles.css            # Global styles, design tokens, light/dark vars
 │   └── main.tsx              # App entry point
@@ -132,10 +138,10 @@ iownpdf/
 ## 📖 Usage
 
 1. **Launch** iownpdf
-2. **Click** a conversion card (Markdown, Word, or PowerPoint)
-3. **Select** your file using the native file picker
-4. **Click** "Convert to PDF"
-5. The PDF is saved alongside your original file
+2. **Click** a conversion card (Markdown, Word, or PowerPoint) — or drag files straight onto the window
+3. **Select** your file using the native file picker (or pick a folder for batch)
+4. Optionally choose an **output folder**; otherwise the PDF lands alongside the source file
+5. **Click** "Convert to PDF" — then open the containing folder directly from the success state
 
 ### Supported Formats
 
@@ -170,9 +176,13 @@ The full phase-by-phase plan lives in [ROADMAP.md](ROADMAP.md).
 
 **Shipped (v0.1):** three forward converters, frameless window chrome, light/dark theming, final icon set.
 
-**Next up (v0.2):** output folder selection, batch conversion, drag-and-drop, "open containing folder" after a successful convert — running in parallel with a v0.2.1 pass on Vitest specs and a cross-platform GitHub Actions pipeline.
+**Shipped (v0.2):** output folder selection, batch conversion with real-time progress, drag-and-drop, and "open containing folder" after conversion.
 
-**Looking further out:** a persistent preferences store (v0.3), a PDF manipulation toolkit — JPG export, merge, split, watermark, image-to-PDF (v0.4), reverse conversions starting with PDF→Markdown (v0.5), and signed installers with auto-update across macOS, Windows, and Linux for v1.0.
+**Shipped (v0.3):** persistent preferences store (`tauri-plugin-store`), settings panel (theme, output folder, post-convert reveal, overwrite toggle), and recent files per format.
+
+**Next up (v0.4):** reverse conversions — PDF→Markdown (pure Rust, `pdf-extract`) and PDF→Word (evaluating Python sidecar).
+
+**Looking further out:** a PDF manipulation toolkit — JPG export, merge, split, watermark, image→PDF (v0.5), generation options and conversion history (v0.6), HTML/Excel/text/CSV input formats (v0.7), and signed installers with auto-update for v1.0.
 
 ---
 
