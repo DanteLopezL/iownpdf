@@ -84,37 +84,13 @@ Rust tests already exist (34 passing in `iownpdf_core` as of the Phase 2 refacto
 
 Dark mode already uses `localStorage`. Consolidate user prefs into one persisted store so new prefs land in a consistent place.
 
-- [ ] **Preferences store** — `tauri-plugin-store` for durable JSON at the OS config dir; migrate the `theme` key out of `localStorage` for parity between web preview and desktop
-- [ ] **Settings panel** — Slide-in sheet or dedicated route; fields: theme, default output folder, "open folder after convert" toggle, "confirm before overwrite" toggle
-- [ ] **Recent files list** — Persist last N files per type; quick-access section in each modal
+- [x] **Preferences store** — `tauri-plugin-store` for durable JSON at the OS config dir; migrate the `theme` key out of `localStorage` for parity between web preview and desktop
+- [x] **Settings panel** — Slide-in sheet or dedicated route; fields: theme, default output folder, "open folder after convert" toggle, "confirm before overwrite" toggle
+- [x] **Recent files list** — Persist last N files per type; quick-access section in each modal
 
 ---
 
-## Phase 5: PDF Manipulation (v0.4)
-
-*Estimated: 3–4 weeks | Dependencies: new Rust PDF library*
-
-Before any PDF-in features work, `iownpdf_core` needs a PDF manipulation library. This is a prerequisite gate — pick once, reuse for everything downstream.
-
-### PDF Library Foundation
-- [ ] Evaluate `pdfium-render` (binary dep, full render pipeline) vs `lopdf` (pure Rust, no rendering). Likely: **both** — `lopdf` for metadata/merge/split, `pdfium-render` for rasterization.
-- [ ] New `pdf/` module in `iownpdf_core` with shared helpers (open, iterate pages, write)
-- [ ] Decide how/whether to bundle the Pdfium shared library across platforms — the biggest distribution concern for v1.0
-
-### PDF Tools
-- [ ] **PDF to JPG** — Rasterize pages via `pdfium-render`; Tauri command takes PDF path, page range, DPI. Output individual files or a zip. **Best first PDF tool — high impact, low effort.**
-- [ ] **PDF merging** — Pure `lopdf`. Tauri command: `merge_pdfs(paths: Vec<PathBuf>) -> PathBuf`. Frontend: reorderable list.
-- [ ] **PDF splitting** — `lopdf` page extraction. Same UI pattern as merge.
-- [ ] **Watermark PDF** — Text overlay per page via `lopdf` content streams. Inputs: text, position, opacity, font size.
-- [ ] **Image (PNG/JPG) to PDF** — `pdfium-render` can embed images. Straightforward and reuses the same dep.
-
-### Milestone: v0.4 — "PDF Toolkit"
-- PDF→JPG, merge, split, watermark, image→PDF.
-- The app goes from "converter" to a lightweight PDF utility tool.
-
----
-
-## Phase 6: Reverse Conversions (v0.5)
+## Phase 5: Reverse Conversions (v0.4)
 
 *Estimated: 4–6 weeks | Mixed complexity*
 
@@ -132,14 +108,38 @@ Before any PDF-in features work, `iownpdf_core` needs a PDF manipulation library
 - [ ] PDF→PPTX ecosystem is thin in every language. Likely requires PDF→image → image-to-pptx pipeline.
 - **Recommendation**: Keep the "Coming Soon" card as a placeholder; ship only if user demand justifies it.
 
-### Milestone: v0.5 — "Reverse"
+### Milestone: v0.4 — "Reverse"
 - PDF→Markdown (solid win). PDF→Word if the sidecar tradeoff is acceptable. PDF→PowerPoint deferred.
+
+---
+
+## Phase 6: PDF Manipulation (v0.5)
+
+*Estimated: 3–4 weeks | Dependencies: new Rust PDF library*
+
+Before any PDF-in features work, `iownpdf_core` needs a PDF manipulation library. This is a prerequisite gate — pick once, reuse for everything downstream.
+
+### PDF Library Foundation
+- [ ] Evaluate `pdfium-render` (binary dep, full render pipeline) vs `lopdf` (pure Rust, no rendering). Likely: **both** — `lopdf` for metadata/merge/split, `pdfium-render` for rasterization.
+- [ ] New `pdf/` module in `iownpdf_core` with shared helpers (open, iterate pages, write)
+- [ ] Decide how/whether to bundle the Pdfium shared library across platforms — the biggest distribution concern for v1.0
+
+### PDF Tools
+- [ ] **PDF to JPG** — Rasterize pages via `pdfium-render`; Tauri command takes PDF path, page range, DPI. Output individual files or a zip. **Best first PDF tool — high impact, low effort.**
+- [ ] **PDF merging** — Pure `lopdf`. Tauri command: `merge_pdfs(paths: Vec<PathBuf>) -> PathBuf`. Frontend: reorderable list.
+- [ ] **PDF splitting** — `lopdf` page extraction. Same UI pattern as merge.
+- [ ] **Watermark PDF** — Text overlay per page via `lopdf` content streams. Inputs: text, position, opacity, font size.
+- [ ] **Image (PNG/JPG) to PDF** — `pdfium-render` can embed images. Straightforward and reuses the same dep.
+
+### Milestone: v0.5 — "PDF Toolkit"
+- PDF→JPG, merge, split, watermark, image→PDF.
+- The app goes from "converter" to a lightweight PDF utility tool.
 
 ---
 
 ## Phase 7: PDF Options & Polish (v0.6)
 
-*Estimated: 2–3 weeks | Depends on Phase 5 library choice*
+*Estimated: 2–3 weeks | Depends on Phase 6 library choice*
 
 ### PDF Generation Options
 - [ ] **Custom metadata** (title, author, subject) — For `.md`: pass via `markdown2pdf::config`. For `.docx`/`.pptx`: post-process with `lopdf` to inject the info dict.
@@ -185,7 +185,7 @@ Each new format is a new struct implementing `FileConverter` in `crates/iownpdf_
 - [ ] Linux `.AppImage` + `.deb` — configure `tauri.bundle.linux`
 
 ### Pdfium Bundling
-- [ ] Resolve how the Pdfium shared library ships per platform (see Phase 5). Blocks release if unaddressed.
+- [ ] Resolve how the Pdfium shared library ships per platform (see Phase 6). Blocks release if unaddressed.
 
 ### Auto-Update
 - [ ] Enable `tauri-plugin-updater` in `tauri.conf.json`
@@ -241,9 +241,9 @@ High-effort, low-demand, or blocked on external tooling that may not be viable:
 | **v0.1** | Foundation: three converters, theming, custom chrome | ✅ Shipped |
 | **v0.2** | Output folder, batch conversion, drag-and-drop, reveal-in-folder | ✅ Shipped |
 | **v0.2.1** | Tests + CI on all platforms | Next |
-| **v0.3** | Persistent preferences, recent files, keyboard shortcuts | — |
-| **v0.4** | PDF toolkit: JPG, merge, split, watermark, image→PDF | — |
-| **v0.5** | Reverse: PDF→Markdown (and maybe PDF→Word) | — |
+| **v0.3** | Persistent preferences, recent files, settings panel | ✅ Shipped |
+| **v0.4** | Reverse: PDF→Markdown (and maybe PDF→Word) | — |
+| **v0.5** | PDF toolkit: JPG, merge, split, watermark, image→PDF | — |
 | **v0.6** | PDF generation options + conversion history | — |
 | **v0.7** | HTML, Excel, text, CSV input formats | — |
 | **v1.0** | Signed installers + auto-update for macOS / Windows / Linux | — |
@@ -258,4 +258,4 @@ Want to help? Check out our [Contributing Guide](CONTRIBUTING.md) (coming soon).
 
 ---
 
-**Last Updated:** April 24, 2026 _(Phase 2 shipped — v0.2 "Practical")_
+**Last Updated:** April 27, 2026 _(Phase 4 shipped — v0.3 "Settings"; reverse conversions promoted to v0.4)_
