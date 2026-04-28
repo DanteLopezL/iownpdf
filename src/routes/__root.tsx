@@ -2,7 +2,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { CustomTitleBar } from "#/components/CustomTitleBar";
-import { ThemeProvider } from "#/context/ThemeContext";
+import { PreferencesProvider } from "#/context/PreferencesContext";
 
 import "../styles.css";
 
@@ -12,7 +12,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
 	return (
-		<ThemeProvider>
+		<PreferencesProvider>
 			<div className="window-frame">
 				<CustomTitleBar />
 				<Outlet />
@@ -28,6 +28,6 @@ function RootComponent() {
 					]}
 				/>
 			</div>
-		</ThemeProvider>
+		</PreferencesProvider>
 	);
 }

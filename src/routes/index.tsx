@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
+	AlertTriangle,
 	ArrowRight,
 	CheckCircle2,
+	Clock,
 	FileEdit,
 	FileText,
 	FolderOpen,
@@ -18,11 +20,20 @@ import { BatchModal } from "#/components/BatchModal";
 import { ComingSoonCard } from "#/components/ComingSoonCard";
 import { ConvertButton } from "#/components/ConvertButton";
 import { Modal } from "#/components/Modal";
+import {
+	type RecentFileType,
+	usePreferences,
+} from "#/context/PreferencesContext";
 
 export const Route = createFileRoute("/")({ component: App });
 
 type FileType = "md" | "pptx" | "docx" | null;
-type ConversionState = "idle" | "converting" | "success" | "error";
+type ConversionState =
+	| "idle"
+	| "confirm-overwrite"
+	| "converting"
+	| "success"
+	| "error";
 
 const fileConfigs = {
 	md: {
@@ -86,7 +97,26 @@ function inferFileType(path: string): FileType {
 	return null;
 }
 
+function basename(path: string): string {
+	return path.split(/[\\/]/).pop() || path;
+}
+
+function predictOutputPath(filePath: string, outputDir: string | null): string {
+	const sep = filePath.includes("\\") ? "\\" : "/";
+	const lastSlash = Math.max(
+		filePath.lastIndexOf("/"),
+		filePath.lastIndexOf("\\"),
+	);
+	const dir = lastSlash >= 0 ? filePath.slice(0, lastSlash) : "";
+	const fileName = lastSlash >= 0 ? filePath.slice(lastSlash + 1) : filePath;
+	const dotIdx = fileName.lastIndexOf(".");
+	const stem = dotIdx > 0 ? fileName.slice(0, dotIdx) : fileName;
+	const targetDir = outputDir ?? dir;
+	return `${targetDir}${sep}${stem}.pdf`;
+}
+
 function App() {
+	const { prefs, addRecentFile } = usePreferences();
 	const [openModal, setOpenModal] = useState<FileType>(null);
 	const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
 	const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
@@ -94,9 +124,12 @@ function App() {
 		useState<ConversionState>("idle");
 	const [error, setError] = useState<string | null>(null);
 	const [successPath, setSuccessPath] = useState<string | null>(null);
+	const [overwritePath, setOverwritePath] = useState<string | null>(null);
 	const [outputDir, setOutputDir] = useState<string | null>(null);
 	const [batchFiles, setBatchFiles] = useState<string[]>([]);
 	const [isBatchOpen, setIsBatchOpen] = useState(false);
+
+	const effectiveOutputDir = outputDir ?? prefs.defaultOutputDir;
 
 	async function pickOutputDir(): Promise<string | null> {
 		try {
@@ -132,10 +165,8 @@ function App() {
 
 			if (!filePath) return;
 
-			const fileName = filePath.split(/[\\/]/).pop() || filePath;
-
 			setSelectedFilePath(filePath);
-			setSelectedFileName(fileName);
+			setSelectedFileName(basename(filePath));
 			setConversionState("idle");
 			setError(null);
 			setSuccessPath(null);
@@ -146,7 +177,15 @@ function App() {
 		}
 	}
 
-	async function handleConvertToPdf() {
+	function selectRecentFile(path: string) {
+		setSelectedFilePath(path);
+		setSelectedFileName(basename(path));
+		setConversionState("idle");
+		setError(null);
+		setSuccessPath(null);
+	}
+
+	async function runConversion() {
 		if (!selectedFilePath || !openModal) return;
 
 		setConversionState("converting");
@@ -156,16 +195,57 @@ function App() {
 			const outputPath = await invoke<string>("convert_to_pdf", {
 				filePath: selectedFilePath,
 				fileType: openModal,
-				outputDir,
+				outputDir: effectiveOutputDir,
 			});
 
+			addRecentFile(openModal as RecentFileType, selectedFilePath);
 			setConversionState("success");
 			setSuccessPath(outputPath);
+
+			if (prefs.openFolderAfterConvert) {
+				try {
+					await invoke("reveal_in_folder", { path: outputPath });
+				} catch (err) {
+					console.error("reveal_in_folder failed", err);
+				}
+			}
 		} catch (err) {
 			const errorMessage = err instanceof Error ? err.message : String(err);
 			setError(errorMessage);
 			setConversionState("error");
 		}
+	}
+
+	async function handleConvertToPdf() {
+		if (!selectedFilePath || !openModal) return;
+
+		if (prefs.confirmBeforeOverwrite) {
+			const predicted = predictOutputPath(selectedFilePath, effectiveOutputDir);
+			try {
+				const exists = await invoke<boolean>("path_exists", {
+					path: predicted,
+				});
+				if (exists) {
+					setOverwritePath(predicted);
+					setConversionState("confirm-overwrite");
+					return;
+				}
+			} catch (err) {
+				console.error("path_exists failed", err);
+			}
+		}
+
+		await runConversion();
+	}
+
+	async function handleConfirmOverwrite() {
+		setOverwritePath(null);
+		await runConversion();
+	}
+
+	function handleCancelOverwrite() {
+		setOverwritePath(null);
+		setConversionState("idle");
 	}
 
 	function handleCloseModal() {
@@ -175,6 +255,7 @@ function App() {
 		setConversionState("idle");
 		setError(null);
 		setSuccessPath(null);
+		setOverwritePath(null);
 	}
 
 	function handleReset() {
@@ -183,6 +264,7 @@ function App() {
 		setConversionState("idle");
 		setError(null);
 		setSuccessPath(null);
+		setOverwritePath(null);
 	}
 
 	function handleCloseBatch() {
@@ -205,10 +287,9 @@ function App() {
 					const path = paths[0];
 					const kind = inferFileType(path);
 					if (!kind) return;
-					const fileName = path.split(/[\\/]/).pop() || path;
 					setOpenModal(kind);
 					setSelectedFilePath(path);
-					setSelectedFileName(fileName);
+					setSelectedFileName(basename(path));
 					setConversionState("idle");
 					setError(null);
 					setSuccessPath(null);
@@ -236,6 +317,11 @@ function App() {
 	}, []);
 
 	const currentConfig = openModal ? fileConfigs[openModal] : null;
+	const recentForType =
+		openModal &&
+		(openModal === "md" || openModal === "docx" || openModal === "pptx")
+			? prefs.recentFiles[openModal]
+			: [];
 
 	return (
 		<main className="relative min-h-screen bg-surface">
@@ -395,7 +481,7 @@ function App() {
 				isOpen={isBatchOpen}
 				onClose={handleCloseBatch}
 				files={batchFiles}
-				outputDir={outputDir}
+				outputDir={effectiveOutputDir}
 				onPickOutputDir={pickOutputDir}
 			/>
 
@@ -426,7 +512,7 @@ function App() {
 											Conversion Successful
 										</h3>
 										<p className="mt-1 text-sm text-ink-muted">
-											{outputDir
+											{effectiveOutputDir
 												? "PDF saved to your chosen folder"
 												: "PDF saved alongside your original file"}
 										</p>
@@ -453,6 +539,51 @@ function App() {
 									className="btn-sharp flex flex-1 items-center justify-center gap-2 px-4 py-3.5 text-sm"
 								>
 									<span>Close</span>
+									<ArrowRight className="h-4 w-4" />
+								</button>
+							</div>
+						</div>
+					) : conversionState === "confirm-overwrite" && overwritePath ? (
+						<div className="space-y-5">
+							<div className="border-2 border-ink bg-yellow-50 p-5">
+								<div className="flex items-start gap-4">
+									<div className="flex h-10 w-10 items-center justify-center border-2 border-ink bg-yellow-200 shrink-0">
+										<AlertTriangle className="h-5 w-5 text-ink" />
+									</div>
+									<div className="min-w-0 flex-1">
+										<h3 className="font-display text-base font-bold text-ink">
+											File already exists
+										</h3>
+										<p className="mt-1 text-sm text-ink-muted">
+											A PDF with the same name already exists at this path.
+											Continuing will replace it.
+										</p>
+										<div className="mt-3 border-t border-border pt-3">
+											<p className="font-mono text-xs text-ink-muted break-all">
+												{overwritePath}
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div className="flex items-center gap-3">
+								<button
+									type="button"
+									onClick={handleCancelOverwrite}
+									className="btn-sharp flex-1 px-4 py-3.5 text-sm"
+								>
+									Cancel
+								</button>
+								<button
+									type="button"
+									onClick={handleConfirmOverwrite}
+									className="btn-sharp flex flex-1 items-center justify-center gap-2 px-4 py-3.5 text-sm text-white"
+									style={{
+										backgroundColor: currentConfig.accentColor,
+										borderColor: "var(--color-ink)",
+									}}
+								>
+									<span>Overwrite</span>
 									<ArrowRight className="h-4 w-4" />
 								</button>
 							</div>
@@ -493,9 +624,14 @@ function App() {
 									<div className="min-w-0 flex-1">
 										<p className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
 											Output folder
+											{!outputDir && prefs.defaultOutputDir && (
+												<span className="ml-2 text-ink-faint normal-case">
+													(default)
+												</span>
+											)}
 										</p>
 										<p className="mt-1 truncate text-sm text-ink">
-											{outputDir ?? "Alongside the input file"}
+											{effectiveOutputDir ?? "Alongside the input file"}
 										</p>
 									</div>
 									<button
@@ -504,7 +640,7 @@ function App() {
 										className="flex items-center gap-2 border-2 border-ink bg-surface-raised px-3 py-2 text-xs font-bold uppercase tracking-wider text-ink transition-colors hover:bg-ink hover:text-surface-raised"
 									>
 										<FolderOpen className="h-3.5 w-3.5" />
-										{outputDir ? "Change" : "Choose"}
+										{effectiveOutputDir ? "Change" : "Choose"}
 									</button>
 								</div>
 							</div>
@@ -525,6 +661,49 @@ function App() {
 									{currentConfig.description}
 								</p>
 							</button>
+
+							{/* Recent files */}
+							{!selectedFilePath && recentForType.length > 0 && (
+								<div className="border-2 border-ink bg-surface-depressed">
+									<div className="flex items-center gap-2 border-b-2 border-ink px-4 py-2.5">
+										<Clock className="h-3.5 w-3.5 text-ink-faint" />
+										<span className="font-mono text-[10px] font-bold uppercase tracking-widest text-ink-faint">
+											Recent
+										</span>
+									</div>
+									<ul>
+										{recentForType.map((path, idx) => (
+											<li
+												key={path}
+												className={
+													idx !== recentForType.length - 1
+														? "border-b border-border"
+														: ""
+												}
+											>
+												<button
+													type="button"
+													onClick={() => selectRecentFile(path)}
+													className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-raised"
+												>
+													<currentConfig.icon
+														className="h-4 w-4 shrink-0"
+														style={{ color: currentConfig.accentColor }}
+													/>
+													<div className="min-w-0 flex-1">
+														<p className="truncate text-sm font-bold text-ink">
+															{basename(path)}
+														</p>
+														<p className="truncate font-mono text-[10px] text-ink-faint">
+															{path}
+														</p>
+													</div>
+												</button>
+											</li>
+										))}
+									</ul>
+								</div>
+							)}
 
 							{/* Selected file info */}
 							{selectedFilePath && (

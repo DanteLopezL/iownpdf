@@ -60,12 +60,14 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_store::Builder::default().build())
         .invoke_handler(tauri::generate_handler![
             convert_to_pdf,
             batch_convert,
             pick_file,
             pick_folder,
             reveal_in_folder,
+            path_exists,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -234,4 +236,9 @@ fn reveal_in_folder(app: AppHandle, path: String) -> Result<(), String> {
     app.opener()
         .reveal_item_in_dir(&path)
         .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn path_exists(path: String) -> bool {
+    Path::new(&path).exists()
 }
