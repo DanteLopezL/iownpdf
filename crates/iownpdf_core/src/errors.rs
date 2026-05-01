@@ -21,6 +21,10 @@ pub enum IownPdfError {
     #[error("conversion failed: {0}")]
     ConversionFailed(String),
 
+    /// The requested output directory is missing or not a directory.
+    #[error("output directory is not a directory: {0}")]
+    InvalidOutputDir(PathBuf),
+
     /// An I/O error occurred.
     #[error("I/O error: {0}")]
     Io(#[from] std::io::Error),

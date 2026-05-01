@@ -1,3 +1,3 @@
 pub mod converter;
-mod errors;
+pub mod errors;
 pub mod utils;
