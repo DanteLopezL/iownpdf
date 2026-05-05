@@ -7,6 +7,11 @@ use crate::errors::IownPdfError;
 /// Checks that the file exists and has the expected extension.
 /// Extension matching is case-sensitive.
 pub fn validate_input(file: &Path, expected_ext: &str) -> Result<(), IownPdfError> {
+    validate_input_any(file, &[expected_ext])
+}
+
+/// Validates input file for conversion against any allowed extension.
+pub fn validate_input_any(file: &Path, expected_exts: &[&str]) -> Result<(), IownPdfError> {
     // Check file existence first
     if !file.try_exists().map_err(IownPdfError::Io)? {
         return Err(IownPdfError::FileNotFound(file.to_path_buf()));
@@ -17,9 +22,9 @@ pub fn validate_input(file: &Path, expected_ext: &str) -> Result<(), IownPdfErro
         IownPdfError::ConversionFailed(format!("file has no extension: {file:?}"))
     })?;
 
-    if extension != expected_ext {
+    if !expected_exts.iter().any(|expected| extension == *expected) {
         return Err(IownPdfError::UnsupportedFormat {
-            expected: expected_ext.to_string(),
+            expected: expected_exts.join(" or ."),
             got: extension.to_string_lossy().to_string(),
         });
     }
@@ -70,6 +75,16 @@ mod tests {
         fs::write(&file_path, "# Hello").unwrap();
 
         let result = validate_input(&file_path, "md");
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_validate_input_any_success() {
+        let dir = tempdir().unwrap();
+        let file_path = dir.path().join("test.markdown");
+        fs::write(&file_path, "# Hello").unwrap();
+
+        let result = validate_input_any(&file_path, &["md", "markdown"]);
         assert!(result.is_ok());
     }
 
