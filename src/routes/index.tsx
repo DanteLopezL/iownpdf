@@ -89,6 +89,16 @@ const comingSoonConfigs = [
 	},
 ];
 
+const pdfEditingConfigs = [
+	{
+		label: "Edit PDF",
+		description: "Merge, split, rotate, and mark up PDFs locally",
+		icon: FileEdit,
+		accentColor: "var(--color-accent-purple)",
+		accentBg: "var(--color-accent-purple-subtle)",
+	},
+];
+
 function inferFileType(path: string): FileType {
 	const ext = path.split(".").pop()?.toLowerCase() ?? "";
 	if (ext === "md" || ext === "markdown") return "md";
@@ -426,6 +436,37 @@ function App() {
 					</div>
 				</section>
 
+				{/* ====== EDIT PDF ====== */}
+				<section className="mb-20">
+					<div className="mb-8 flex items-end gap-4">
+						<h2 className="font-display text-3xl font-bold text-ink tracking-tight">
+							Edit PDF
+						</h2>
+						<div className="flex-1 border-b-2 border-border" />
+						<span className="font-mono text-[10px] font-medium uppercase tracking-widest text-ink-faint pb-1">
+							02 / Modify
+						</span>
+					</div>
+
+					<div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+						{pdfEditingConfigs.map((config, i) => (
+							<div
+								key={config.label}
+								className="animate-slide-up"
+								style={{ animationDelay: `${0.5 + i * 0.08}s` }}
+							>
+								<ComingSoonCard
+									icon={config.icon}
+									label={config.label}
+									description={config.description}
+									accentColor={config.accentColor}
+									accentBg={config.accentBg}
+								/>
+							</div>
+						))}
+					</div>
+				</section>
+
 				{/* ====== COMING SOON ====== */}
 				<section className="mb-20">
 					<div className="mb-8 flex items-end gap-4">
@@ -434,7 +475,7 @@ function App() {
 						</h2>
 						<div className="flex-1 border-b-2 border-border" />
 						<span className="font-mono text-[10px] font-medium uppercase tracking-widest text-ink-faint pb-1">
-							02 / Output
+							03 / Output
 						</span>
 					</div>
 
@@ -468,7 +509,7 @@ function App() {
 						</div>
 						<div className="flex items-center gap-6">
 							<span className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
-								v0.2.0
+								v0.3.0
 							</span>
 							<div className="h-3 w-3 border-2 border-ink-faint bg-ink-faint" />
 						</div>

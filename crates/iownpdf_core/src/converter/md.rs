@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use crate::{
     converter::FileConverter,
     errors::IownPdfError,
-    utils::validator::{resolve_output_path, validate_input},
+    utils::validator::{resolve_output_path, validate_input_any},
 };
 
 /// Converter for Markdown files to PDF.
@@ -14,7 +14,7 @@ pub struct MdConverter {
 
 impl FileConverter for MdConverter {
     fn new(file: &Path) -> Result<Self, IownPdfError> {
-        validate_input(file, "md")?;
+        validate_input_any(file, &["md", "markdown"])?;
         Ok(Self {
             file: file.to_path_buf(),
         })
@@ -72,11 +72,11 @@ mod tests {
     }
 
     #[test]
-    fn test_md_converter_new_wrong_md_extension() {
+    fn test_md_converter_new_markdown_extension() {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("test.markdown");
         fs::write(&file_path, "# Hello").unwrap();
-        assert!(MdConverter::new(&file_path).is_err());
+        assert!(MdConverter::new(&file_path).is_ok());
     }
 
     #[test]

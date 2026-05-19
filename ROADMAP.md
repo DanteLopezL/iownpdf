@@ -2,7 +2,7 @@
 
 A comprehensive roadmap for the iownpdf PDF conversion application.
 
-## 🎯 Vision
+## Vision
 
 Create a beautiful, fast, and offline-first desktop application for converting various document formats to PDF — and back.
 
